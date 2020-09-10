@@ -3,7 +3,7 @@
 if test -f "errors.sh"; then
     source errors.sh
 else
-    echo "Fatal error: missing script errors.sh" > /dev/stderr && exit -9
+    echo "Fatal error: missing script errors.sh" > /dev/stderr && exit -10
 fi
 
 [[ $# -lt 2 ]] && not_enough_args "app"
