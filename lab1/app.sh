@@ -17,3 +17,4 @@ case $1 in
 	echo "reverse not implemented" ;;
     strlen )
 	echo "strlen not implemented" ;;
+esac
