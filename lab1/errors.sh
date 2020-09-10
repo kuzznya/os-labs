@@ -1,25 +1,35 @@
 #!/bin/bash
 
+# print_err <message>
+# Print message to stderr
 print_err() {
     echo "$*" >> /dev/stderr
 }
 
+# error_exit <message> [<code>]
+# Print message to srderr & then exit with given code
+# If no code present, then -1 is returned
 error_exit() {
-    local script_name="$1"
-    local message="$2"
-    local code="${3:-1}"
+    local message="$1"
+    local code="${2:-1}"
 
-    [[ -n "$message" ]] && print_err "Error in script $script_name: $message" || \
-	    print_err "Error in script $script_name"
+    [[ -n "$message" ]] && print_err "Error: $message" || \
+	    print_err "Fatal error"
 
     exit "${code}"
 }
 
+# missing_script <missing script name>
+# Reports that script is missing
+# Exit code -10
 missing_script() {
-    error_exit "$1" "Missing script $2" -9
+    error_exit "Missing script $1" -10
 }
 
+# not_enough_args <command>
+# Prints manual & reports that command is invalid
+# Exit code -9
 not_enough_args() {
-    print_man
-    error_exit "$1" "Not enough args" -10
+    [[ -f "utils.sh" ]] && source utils.sh && print_man || missing_script "errors.sh" "utils.sh"
+    error_exit "Not enough args for command $1" -9
 }
