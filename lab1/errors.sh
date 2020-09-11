@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ -z "$IMPORT_ERRORS" ]] && IMPORT_ERRORS=true || return 0
+
 # print_err <message>
 # Print message to stderr
 print_err() {

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ -z "$IMPORT_UTILS" ]] && IMPORT_UTILS=true || return 0
+
 # import <script path>
 # Load script from path
 # Return 0 if script was loaded or -1 if not
@@ -7,11 +9,12 @@ import() {
     if [[ -f "$1" ]] ; then
 	source "$1" && return 0 || return -1
     else
-	echo "$1 not found"
 	return -1
     fi
 }
 
+#require <script path>
+# Load script from path or call missing_script
 require() {
     if ! import errors.sh ; then
 	echo "Fatal error: missing script errors.sh" > /dev/stderr && exit -10
