@@ -1,12 +1,14 @@
 #!/bin/bash
 
-if test -f "errors.sh"; then
-    source errors.sh
+if [[ -f "utils.sh" ]] ; then
+    source utils.sh
 else
-    echo "Fatal error: missing script errors.sh" > /dev/stderr && exit -10
+    echo "Fatal error: missing script utils.sh" > /dev/stderr && exit -10
 fi
 
-[[ $# -lt 2 ]] && not_enough_args "app"
+require errors.sh
+
+[[ $# -lt 1 ]] && not_enough_args "app"
 
 case $1 in
     calc )
