@@ -25,12 +25,6 @@ div() {
     echo $result
 }
 
-# is_int <param>
-# Returns 0 if param is int, else -1
-is_int() {
-    [[ "$1" =~ ^([1-9][0-9]*|0)$ ]] && return 0 || return -1
-}
-
 # calc <action> <int1> <int2>
 # action: sum/sub/mul/div
 # If action is unknown, then invalid_args throws

@@ -2,7 +2,6 @@
 
 [[ -z "$IMPORT_SEARCH" ]] && IMPORT_SEARCH=true || return 0
 
-require core.sh
 require errors.sh
 
 # search_in_file <file> <regex>

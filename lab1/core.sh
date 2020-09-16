@@ -60,4 +60,10 @@ foreach_str() {
     done
 }
 
+# is_int <value>
+# Return 0 if value is int, else return -1
+is_int() {
+    [[ "$1" =~ ^-?([1-9][0-9]*|0)$ ]] && return 0 || return -1
+}
+     
 require errors.sh
