@@ -23,13 +23,15 @@ case "$1" in
 	[[ $# -ne 3 ]] && invalid_args reverse "invalid args count"
 	require modules/reverse.sh
 	reverse "$2" "$3" ;;
+    strlen )
+	[[ $# -ne 2 ]] && invalid_args strlen "invalid args count"
+	require modules/strlen.sh
+	strlen "$1" ;;
     log )
 	[[ $# -ne 1 ]] && invalid_args log "no args expected"
 	require modules/log.sh
 	log /var/log/anaconda/X.log ;;
-    strlen )
-	echo "strlen not implemented" ;;
-    "help" )
+    help )
 	print_man ;;
     * )
 	invalid_args app "unknown command $1" ;;
