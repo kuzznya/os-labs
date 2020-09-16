@@ -44,14 +44,14 @@ calc() {
 
     case $action in
 	sum )
-	    echo $(sum $param1 $param2) ;;
+	    sum $param1 $param2 ;;
 	sub )
-	    echo $(sub $param1 $param2) ;;
+	    sub $param1 $param2 ;;
 	mul )
-	    echo $(mul $param1 $param2) ;;
+	    mul $param1 $param2 ;;
 	div )
-	    echo $(div $param1 $param2) ;;
+	    div $param1 $param2 ;;
 	* )
-	    invalid_args calc "cannot calculate action $ACTION" ;;
+	    invalid_args calc "cannot calculate action $action" ;;
     esac
 }
