@@ -26,13 +26,16 @@ case "$1" in
     strlen )
 	[[ $# -ne 2 ]] && invalid_args strlen "invalid args count"
 	require modules/strlen.sh
-	strlen "$1" ;;
+	strlen "$2" ;;
     log )
 	[[ $# -ne 1 ]] && invalid_args log "no args expected"
 	require modules/log.sh
 	log /var/log/anaconda/X.log ;;
     help )
 	print_man ;;
+    exit )
+	[[ -n $2 ]] && ! is_int "$2" && invalid_args exit "param should be int"
+	exit ${2:0} ;;
     * )
 	invalid_args app "unknown command $1" ;;
 esac
