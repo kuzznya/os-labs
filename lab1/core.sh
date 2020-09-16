@@ -30,20 +30,33 @@ print_man() {
     cat man.txt
 }
 
+# replace_first <regex> <value> <source>
+# Replace first match of regex in source with value
+replace_first() {
+    local str="$3"
+    echo "${str/$1/$2}"
+}
+
+# replace_all <regex> <value> <source>
+# Replace all matches of regex in source to value
 replace_all() {
     local str="$3"
     echo "${str//$1/$2}"
 }
 
+# foreach <command>
+# Execute command for each value of input
 foreach() {
     while read value; do
-	eval "$1 $value"
+	eval "$* $value"
     done
 }
 
+# foreach_str <command>
+# Execute command for each line of input
 foreach_str() {
     while read value; do
-	eval "$1 '$value'"
+	eval "$* '$value'"
     done
 }
 
