@@ -65,5 +65,13 @@ foreach_str() {
 is_int() {
     [[ "$1" =~ ^-?([1-9][0-9]*|0)$ ]] && return 0 || return -1
 }
-     
+
+file_exists() {
+    [[ -f "$1" ]] && return 0 || return -1
+}
+
+dir_exists() {
+    [[ -d "$1" ]] && return 0 || return -1
+}
+
 require errors.sh
