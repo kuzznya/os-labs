@@ -12,10 +12,13 @@ require errors.sh
 
 case "$1" in
     calc )
+	[[ $# -ne 4 ]] && invalid_args calc "invalid args count"
 	require modules/calc.sh
-	echo $( calc "$2" "$3" "$4" ) ;;
+	calc "$2" "$3" "$4" ;;
     search )
-	echo "search not implemented yet" ;;
+	[[ $# -ne 3 ]] && invalid_args search "invalid args count"
+	require modules/search.sh
+	search "$2" "$3" ;;
     reverse )
 	echo "reverse not implemented" ;;
     strlen )
