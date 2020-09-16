@@ -20,7 +20,9 @@ case "$1" in
 	require modules/search.sh
 	search "$2" "$3" ;;
     reverse )
-	echo "reverse not implemented" ;;
+	[[ $# -ne 3 ]] && invalid_args reverse "invalid args count"
+	require modules/reverse.sh
+	reverse "$2" "$3" ;;
     strlen )
 	echo "strlen not implemented" ;;
     "help" )
