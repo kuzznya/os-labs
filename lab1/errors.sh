@@ -28,14 +28,6 @@ missing_script() {
     error_exit "missing script $1" -10
 }
 
-# not_enough_args <command>
-# Prints manual & reports that command args count is invalid
-# Exit code -9
-not_enough_args() {
-    ! [[ -z "$IMPORT_CORE" ]] && print_man
-    error_exit "not enough args for command $1" -9
-}
-
 # invalid_args <command> <message>
 # Prints manual & reports that command args are invalid
 # Exit code -9

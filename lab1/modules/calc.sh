@@ -34,13 +34,13 @@ is_int() {
 # calc <action> <int1> <int2>
 # action: sum/sub/mul/div
 # If action is unknown, then invalid_args throws
-calc() {
+calc() {    
     local action="$1"
     local param1="$2"
     local param2="$3"
     
-    ! is_int $param1 && invalid_args "calc" "$param1 is not an int"
-    ! is_int $param2 && invalid_args "calc" "$param2 is not an int"
+    ! is_int $param1 && invalid_args calc "$param1 is not an int"
+    ! is_int $param2 && invalid_args calc "$param2 is not an int"
 
     case $action in
 	sum )
@@ -52,6 +52,6 @@ calc() {
 	div )
 	    echo $(div $param1 $param2) ;;
 	* )
-	    invalid_args "calc" "cannot calculate action $ACTION" ;;
+	    invalid_args calc "cannot calculate action $ACTION" ;;
     esac
 }

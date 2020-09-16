@@ -8,7 +8,7 @@ fi
 
 require errors.sh
 
-[[ $# -lt 1 ]] && not_enough_args "app"
+[[ $# -lt 1 ]] && invalid_args app "not enough args"
 
 case "$1" in
     calc )
@@ -20,4 +20,8 @@ case "$1" in
 	echo "reverse not implemented" ;;
     strlen )
 	echo "strlen not implemented" ;;
+    "help" )
+	print_man ;;
+    * )
+	invalid_args app "unknown command $1" ;;
 esac
