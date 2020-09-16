@@ -30,4 +30,21 @@ print_man() {
     cat man.txt
 }
 
+replace_all() {
+    local str="$3"
+    echo "${str//$1/$2}"
+}
+
+foreach() {
+    while read value; do
+	eval "$1 $value"
+    done
+}
+
+foreach_str() {
+    while read value; do
+	eval "$1 '$value'"
+    done
+}
+
 require errors.sh
