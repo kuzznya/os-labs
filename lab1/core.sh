@@ -21,7 +21,6 @@ require() {
     fi
 
     if ! import "$1" ; then
-	echo Fuck
 	missing_script "$1"
     fi
 }
@@ -30,3 +29,5 @@ require() {
 print_man() {
     cat man.txt
 }
+
+require errors.sh

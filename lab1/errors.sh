@@ -25,13 +25,21 @@ error_exit() {
 # Reports that script is missing
 # Exit code -10
 missing_script() {
-    error_exit "Missing script $1" -10
+    error_exit "missing script $1" -10
 }
 
 # not_enough_args <command>
-# Prints manual & reports that command is invalid
+# Prints manual & reports that command args count is invalid
 # Exit code -9
 not_enough_args() {
-    [[ -f "utils.sh" ]] && source utils.sh && print_man || missing_script "errors.sh" "utils.sh"
-    error_exit "Not enough args for command $1" -9
+    ! [[ -z "$IMPORT_CORE" ]] && print_man
+    error_exit "not enough args for command $1" -9
+}
+
+# invalid_args <command> <message>
+# Prints manual & reports that command args are invalid
+# Exit code -9
+invalid_args() {
+    ! [[ -z "$IMPORT_CORE" ]] && print_man
+    error_exit "invalid args for command $1: $2" -9
 }
