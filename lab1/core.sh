@@ -27,7 +27,7 @@ require() {
 
 # Print program manual
 print_man() {
-    cat man.txt
+    echo | cat man.txt
 }
 
 require errors.sh
