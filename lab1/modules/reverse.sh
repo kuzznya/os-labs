@@ -14,5 +14,5 @@ reverse() {
 	illegal_operation "file $2 is not writable"
     fi
     
-    tac "$1" | rev > "$2"
+    [[ "$1" = "$2" ]] && tac "$1" | rev > TMP && mv TMP "$2" || tac "$1" | rev > "$2"
 }
