@@ -10,7 +10,7 @@ require errors.sh
 reverse() {
     ! file_exists "$1" && illegal_operation "file $1 does not exist"
     ! file_readable "$1" && illegal_operation "file $1 is not readable"
-    if file_exists "$2" && ! file_writable "$2" || dir_exists "$2" ; then
+    if file_exists "$2" && ! file_writable "$2" || dir_exists "$2" || ! touch "$2" 2> /dev/null ; then
 	illegal_operation "file $2 is not writable"
     fi
     
