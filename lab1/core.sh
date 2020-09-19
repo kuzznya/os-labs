@@ -27,7 +27,7 @@ require() {
 
 # Print program manual
 print_man() {
-    cat man.txt
+    file_exists man.txt && cat man.txt
 }
 
 # replace_first <regex> <value> <source>

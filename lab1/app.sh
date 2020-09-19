@@ -8,6 +8,17 @@ fi
 
 require errors.sh
 
+module_missing() {
+    echo "Warning: $@ not found; some actions are unavailable"
+}
+
+! file_exists modules/calc.sh &&  module_missing modules/calc.sh
+! file_exists modules/search.sh && module_missing modules/search.sh
+! file_exists modules/reverse.sh && module_missing modules/reverse.sh
+! file_exists modules/strlen.sh && module_missing modules/strlen.sh
+! file_exists modules/log.sh && module_missing modules/log.sh
+! file_exists man.txt && module_missing man.txt
+
 [[ $# -lt 1 ]] && invalid_args app "not enough args"
 
 case "$1" in
