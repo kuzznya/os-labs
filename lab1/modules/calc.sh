@@ -21,6 +21,7 @@ mul() {
 }
 
 div() {
+    [[ $2 -eq 0 ]] && illegal_operation "division by zero"
     let "result = $1 / $2"
     echo $result
 }

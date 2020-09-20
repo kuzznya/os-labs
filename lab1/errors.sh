@@ -35,3 +35,10 @@ invalid_args() {
     ! [[ -z "$IMPORT_CORE" ]] && print_man
     error_exit "invalid args for command $1: $2" -9
 }
+
+# illegal_operation <message>
+# Reports about illegal operation
+# Exit code -8
+illegal_operation() {
+    error_exit "illegal operation: $1" -8
+}
