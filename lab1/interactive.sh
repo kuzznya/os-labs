@@ -128,7 +128,7 @@ handle_input() {
 		break ;;
 	    l|log )
 		[[ -z $log_imported ]] && echo "Command unavailable" && continue
-		interactive_log
+		log /var/log/anaconda/X.log
 		break ;;
 	    m|menu )
 		print_menu ;;
