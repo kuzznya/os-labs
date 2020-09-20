@@ -98,6 +98,12 @@ interactive_reverse() {
     touch output && reverse "$input" "$output" || illegal_operation "$output is not writable"
 }
 
+interactive_strlen() {
+    printf "> "
+    read str
+    strlen $str
+}
+
 handle_input() {
     while true
     do
