@@ -37,6 +37,10 @@ input_int() {
     input_valid "$1" is_int "Input is not an int"
 }
 
+input_file() {
+    input_valid "$1" file_exists "Input is not a valid file"
+}
+
 input_dir() {
     input_valid "$1" dir_exists "Input is not a valid directory"
 }
@@ -74,6 +78,14 @@ interactive_calc() {
     input_int int2
 
     eval "calc $action $int1 $int2"
+}
+
+interactive_search() {
+    echo "Directory to search into:"
+    input_dir dir
+    echo "Regex: "
+    read regex
+    search "$dir" "$regex"
 }
 
 handle_input() {
