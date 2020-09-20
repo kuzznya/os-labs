@@ -13,7 +13,7 @@ import() {
     fi
 }
 
-#require <script path>
+# require <script path>
 # Load script from path or call missing_script
 require() {
     if ! import errors.sh ; then
@@ -23,6 +23,15 @@ require() {
     if ! import "$1" ; then
 	missing_script "$1"
     fi
+}
+
+# call <script path> <func>
+# call function from script
+call() {
+    require "$1"
+    args=( $@ )
+    args=("${args[@]:2:100}")
+    eval "$2 ${args[@]}"
 }
 
 # Print program manual
@@ -63,7 +72,24 @@ foreach_str() {
 # is_int <value>
 # Return 0 if value is int, else return -1
 is_int() {
-    [[ "$1" =~ ^-?([1-9][0-9]*|0)$ ]] && return 0 || return -1
+    [[ "$1" =~ ^[-+]?([1-9][0-9]*|0)$ ]] && return 0 || return -1
+}
+
+# make_list <args>...
+# echo each argument (so that data can be easily iterated through)
+make_list() {
+    for i in $@ ; do
+	echo $i
+    done
+}
+
+# contains <value>
+# Return 0 if input stream contains value, else return -1
+contains() {
+    while read line ; do
+	[[ "$1" -eq "$line" ]] && return 0
+    done
+    return -1
 }
 
 file_exists() {
@@ -74,4 +100,19 @@ dir_exists() {
     [[ -d "$1" ]] && return 0 || return -1
 }
 
+# context_runner
+# Run user commands in context (interactive console)
+# Exit on 'exit' command
+context_runner() {
+    while true; do
+	printf "> "
+	read line
+	[[ "$line" == exit ]] && exit 0
+	eval "$line"
+    done
+}
+
 require errors.sh
+
+
+[[ "$1" == console ]] && context_runner

@@ -42,6 +42,9 @@ case "$1" in
 	[[ $# -ne 1 ]] && invalid_args log "no args expected"
 	require modules/log.sh
 	log /var/log/anaconda/X.log ;;
+    interactive )
+	[[ $# -ne 1 ]] && invalid_args interactive "no args expected"
+	require interactive.sh ;;
     help )
 	print_man ;;
     exit )

@@ -1,0 +1,114 @@
+#!/bin/bash
+
+require core.sh
+require errors.sh
+
+import modules/calc.sh && calc_imported=true
+import modules/search.sh && search_imported=true
+import modules/reverse.sh && reverse_imported=true
+import modules/strlen.sh && strlen_imported=true
+import modules/log.sh && log_imported=true
+
+print_menu() {
+    [[ -n $calc_imported ]] && echo "c - calc"
+    [[ -n $search_imported ]] && echo "s - search"
+    [[ -n $reverse_imported ]] && echo "r - reverse"
+    [[ -n $strlen_imported ]] && echo "n - strlen"
+    [[ -n $log_imported ]] && echo "l - log"
+    echo "m - menu"
+}
+
+input_valid() {
+    validate="$2"
+    [[ -z "$3" ]] && error_msg="Invalid input" || error_msg="$3"
+    
+    while true ; do
+	printf "> "
+	read line
+	if $validate $line ; then
+	    eval "$1=$line"
+	    break
+	fi
+	echo "$error_msg"
+    done
+}
+
+input_int() {
+    input_valid "$1" is_int "Input is not an int"
+}
+
+input_dir() {
+    input_valid "$1" dir_exists "Input is not a valid directory"
+}
+
+interactive_calc() {
+    echo "Actions:"
+    echo "+ sum"
+    echo "- sub"
+    echo "* mul"
+    echo "/ div"
+
+    while true
+    do
+	printf "> "
+	read action
+	case $action in
+	    +|sum )
+		action=sum
+		break ;;
+	    -|sub )
+		action=sub
+		break ;;
+	    \*|mul )
+		action=mul
+		break ;;
+	    /|div )
+		action=div
+		break ;;
+	    * )
+		echo "Invalid action, please try again" ;;
+	esac
+    done
+
+    input_int int1
+    input_int int2
+
+    eval "calc $action $int1 $int2"
+}
+
+handle_input() {
+    while true
+    do
+	printf "> "
+	read line
+	case $line in
+	    c|calc )
+		[[ -z $calc_imported ]] && echo "Command unavailable" && continue
+		interactive_calc
+		break ;;
+	    s|search )
+		[[ -z $search_imported ]] && echo "Command unavailable" && continue
+		interactive_search
+		break ;;
+	    r|reverse )
+		[[ -z $reverse_imported ]] && echo "Command unavailable" && continue
+		interactive_reverse
+		break ;;
+	    n|strlen )
+		[[ -z $strlen_imported ]] && echo "Command unavailable" && continue
+		interactive_strlen
+		break ;;
+	    l|log )
+		[[ -z $log_imported ]] && echo "Command unavailable" && continue
+		interactive_log
+		break ;;
+	    m|menu )
+		print_menu ;;
+	    * )
+		echo "Invalid input, enter 'menu' to see menu again"
+	esac
+    done
+}
+
+print_menu
+handle_input
