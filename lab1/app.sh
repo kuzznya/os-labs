@@ -17,6 +17,7 @@ module_missing() {
 ! file_exists modules/reverse.sh && module_missing modules/reverse.sh
 ! file_exists modules/strlen.sh && module_missing modules/strlen.sh
 ! file_exists modules/log.sh && module_missing modules/log.sh
+! file_exists interactive.sh && module_missing interactive.sh
 ! file_exists man.txt && module_missing man.txt
 
 [[ $# -lt 1 ]] && invalid_args app "not enough args"
@@ -44,7 +45,7 @@ case "$1" in
 	log /var/log/anaconda/X.log ;;
     interactive )
 	[[ $# -ne 1 ]] && invalid_args interactive "no args expected"
-	require interactive.sh ;;
+	call interactive.sh start ;;
     help )
 	print_man ;;
     exit )

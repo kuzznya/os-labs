@@ -15,6 +15,7 @@ print_menu() {
     [[ -n $reverse_imported ]] && echo "r - reverse"
     [[ -n $strlen_imported ]] && echo "n - strlen"
     [[ -n $log_imported ]] && echo "l - log"
+    echo "e - exit"
     echo "m - menu"
 }
 
@@ -125,11 +126,17 @@ handle_input() {
 		break ;;
 	    m|menu )
 		print_menu ;;
+	    e|exit )
+		echo "Return code (default 0):"
+		read code
+		is_int $code && exit $code || exit 0 ;;
 	    * )
 		echo "Invalid input, enter 'menu' to see menu again"
 	esac
     done
 }
 
-print_menu
-handle_input
+start() {
+    print_menu
+    handle_input
+}
