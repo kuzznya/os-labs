@@ -83,9 +83,18 @@ interactive_calc() {
 interactive_search() {
     echo "Directory to search into:"
     input_dir dir
-    echo "Regex: "
+    echo "Regex:"
     read regex
     search "$dir" "$regex"
+}
+
+interactive_reverse() {
+    echo "Input file:"
+    input_file input
+    echo "Output file:"
+    printf "> "
+    read output
+    touch output && reverse "$input" "$output" || illegal_operation "$output is not writable"
 }
 
 handle_input() {
