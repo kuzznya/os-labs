@@ -1,2 +1,27 @@
-Manual was not created yet
-Please be patient I have autism
+Commands:
+- calc <action> <num1> <num2>
+Actions: sum, sub, mul, div
+Errors: invalid_args - if num1 or num2 is not an integer, illegal_operation - division by zero
+
+- search <dir> <regex>
+Search recusively in files of given directory for lines that match regex
+Errors: invalid_args - if <dir> is not a valid directory
+
+- reverse <input file> <output file>
+Reverse the contents of input file & write it to output file
+Errors: illegal_operation - if input file does not exist or output file is not writable
+
+- strlen <string>
+Get string length
+
+- log
+Print colored log /var/log/anaconda/X.log
+
+- exit [<code>]
+Exit with given code (or 0 by default)
+
+Error codes:
+-10...missing script
+-9....invalid args
+-8....illegal operation
+-1....unknown error
