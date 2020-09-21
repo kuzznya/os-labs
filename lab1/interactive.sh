@@ -144,5 +144,7 @@ handle_input() {
 
 start() {
     print_menu
-    handle_input
+    while true ; do
+	handle_input
+    done
 }
