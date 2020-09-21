@@ -5,21 +5,9 @@
 require core.sh
 require errors.sh
 
-# search_in_file <file> <regex>
-search_in_file() {
-    file="$1"
-    regex="$2"
-
-    grep "$regex" "$file"
-}
-
 # search <dir> <regex>
 # Search for strings matching regex in all files of directory recursively
 search() {
     ! dir_exists "$1" && invalid_args search "$1 is not a directory"
-    
-    for file in $(find "$1")
-    do
-       file_exists $file && search_in_file "$file" "$2"
-    done
+    grep -r "$2" "$1" | cut -d: -f2 | uniq
 }
