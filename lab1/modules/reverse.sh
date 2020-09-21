@@ -9,6 +9,7 @@ require errors.sh
 # Reverse input file text and write to output file 
 reverse() {
     ! file_exists "$1" && illegal_operation "file $1 does not exist"
+    ! file_readable "$1" && illegal_operation "file $1 is not readable"
     if file_exists "$2" && ! file_writable "$2" || dir_exists "$2" ; then
 	illegal_operation "file $2 is not writable"
     fi

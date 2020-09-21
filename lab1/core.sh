@@ -96,6 +96,10 @@ file_exists() {
     [[ -f "$1" ]] && return 0 || return -1
 }
 
+file_readable() {
+    [[ -r "$1" ]] && return 0 || return -1
+}
+
 file_writable() {
     [[ -w "$1" ]] && return 0 || return -1
 }
