@@ -1,4 +1,4 @@
-package os.server;
+package os.socket;
 
 public class SocketAddress {
     private final Domain domain;

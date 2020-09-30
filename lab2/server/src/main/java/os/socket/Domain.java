@@ -1,4 +1,4 @@
-package os.server;
+package os.socket;
 
 public enum Domain {
     AF_UNSPEC,

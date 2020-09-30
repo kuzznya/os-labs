@@ -1,4 +1,4 @@
-package os.server;
+package os.socket;
 
 import java.io.Closeable;
 
@@ -8,8 +8,8 @@ public class Socket implements Closeable {
     private final SocketType type;
     private final int protocol;
 
-    boolean created = false;
-    int descriptor = -1;
+    private boolean created = false;
+    private int descriptor = -1;
 
     public Socket(Domain domain, SocketType type) {
         this(domain, type, 0);
@@ -22,7 +22,10 @@ public class Socket implements Closeable {
     }
 
     public void create() {
+        if (created)
+            return;
         descriptor = socket(domain.getNativeValue(), type.getNativeValue(), protocol);
+        created = true;
     }
 
     public void bind(SocketAddress address) {
@@ -37,4 +40,8 @@ public class Socket implements Closeable {
     protected native int socket(short domain, int type, int protocol);
     protected native int bind(int descriptor, short domain, char[] addressData);
     protected native int close(int descriptor);
+
+    static {
+        System.loadLibrary("bridge");
+    }
 }

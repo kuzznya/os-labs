@@ -73,3 +73,7 @@ model {
         }
     }
 }
+
+tasks.withType(JavaExec) {
+    systemProperty 'java.library.path', "${buildDir}/libs/bridge/shared"
+}
