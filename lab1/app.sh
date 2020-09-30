@@ -50,7 +50,7 @@ case "$1" in
 	print_man ;;
     exit )
 	[[ -n $2 ]] && ! is_int "$2" && invalid_args exit "param should be int"
-	exit ${2:0} ;;
+	[[ -z $2 ]] && exit 0 || exit $2 ;;
     * )
 	invalid_args app "unknown command $1" ;;
 esac
