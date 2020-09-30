@@ -4,9 +4,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <memory>
+#include <iostream>
 
 JNIEXPORT jint JNICALL Java_os_server_Socket_socket
         (JNIEnv* env, jobject obj, jshort domain, jint type, jint protocol) {
+    std::cerr << "Creating socket with domain " << domain << " and type " << type << std::endl;
     return socket(domain, type, protocol);
 }
 
