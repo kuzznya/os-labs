@@ -1,0 +1,75 @@
+import org.gradle.internal.jvm.Jvm
+
+plugins {
+    id 'java'
+    id 'cpp'
+    id 'java-library'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+model {
+    components {
+        bridge(NativeLibrarySpec) {
+            sources {
+                cpp {
+                    source {
+                        srcDirs 'src/main/cpp'
+                        include "**/*.cpp"
+                        exclude "cmake-build-debug/**"
+                    }
+                    exportedHeaders {
+                        srcDirs "${project.buildDir}/generated/sources/headers/java/main"
+                    }
+                }
+            }
+
+            binaries.all {
+                if (targetPlatform.operatingSystem.macOsX) {
+                    cppCompiler.args '-I', "${Jvm.current().javaHome}/include"
+                    cppCompiler.args '-I', "${Jvm.current().javaHome}/include/darwin"
+                    cppCompiler.args '-mmacosx-version-min=10.9'
+                    cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-std=c++14'
+                    cppCompiler.args '-O2'
+
+                    linker.args '-mmacosx-version-min=10.9'
+                    linker.args '-lc++'
+                    linker.args '-O2'
+
+                } else if (targetPlatform.operatingSystem.linux) {
+                    cppCompiler.args '-I', "${Jvm.current().javaHome}/include"
+                    cppCompiler.args '-I', "${Jvm.current().javaHome}/include/linux"
+                    cppCompiler.args '-D_FILE_OFFSET_BITS=64'
+                    cppCompiler.args '-std=c++14'
+                    cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-O2'
+
+                    linker.args '-lstdc++'
+                    linker.args '-O2'
+
+                } else if (targetPlatform.operatingSystem.windows) {
+                    cppCompiler.args "-I${Jvm.current().javaHome}/include"
+                    cppCompiler.args "-I${Jvm.current().javaHome}/include/win32"
+                    cppCompiler.args '-std=c++14'
+                    cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-O2'
+
+                    linker.args "Shlwapi.lib", "Advapi32.lib"
+                    linker.args '-lstdc++'
+                    linker.args '-O2'
+                } else if (targetPlatform.operatingSystem.freeBSD) {
+                    cppCompiler.args '-I', "${Jvm.current().javaHome}/include"
+                    cppCompiler.args '-I', "${Jvm.current().javaHome}/include/freebsd"
+                    cppCompiler.args '-std=c++14'
+                    cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-O2'
+
+                    linker.args '-lstdc++'
+                    linker.args '-O2'
+                }
+            }
+        }
+    }
+}
