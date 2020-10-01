@@ -6,7 +6,7 @@ plugins {
     id 'java-library'
 }
 
-group 'org.example'
+group 'com.github.kuzznya'
 version '1.0-SNAPSHOT'
 
 model {
@@ -74,6 +74,13 @@ model {
     }
 }
 
-tasks.withType(JavaExec) {
-    systemProperty 'java.library.path', "${buildDir}/libs/bridge/shared"
+jar {
+    dependsOn("bridgeStaticLibrary", "bridgeSharedLibrary")
+    from("${project.buildDir}/libs/bridge/shared") {
+        into "libs"
+    }
+}
+
+test {
+    systemProperty 'java.library.path', "${project.buildDir}/libs/bridge/shared"
 }

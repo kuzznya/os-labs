@@ -1,4 +1,4 @@
-#include "os_server_Socket.h"
+#include "os_socket_Socket.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -6,13 +6,12 @@
 #include <memory>
 #include <iostream>
 
-JNIEXPORT jint JNICALL Java_os_server_Socket_socket
+JNIEXPORT jint JNICALL Java_os_socket_Socket_socket
         (JNIEnv* env, jobject obj, jshort domain, jint type, jint protocol) {
-    std::cerr << "Creating socket with domain " << domain << " and type " << type << std::endl;
     return socket(domain, type, protocol);
 }
 
-JNIEXPORT jint JNICALL Java_os_server_Socket_bind
+JNIEXPORT jint JNICALL Java_os_socket_Socket_bind
         (JNIEnv* env, jobject obj, jint socket, jshort domain, jcharArray address) {
     jboolean isCopy = true;
     char* addressData = reinterpret_cast<char*>(
@@ -29,7 +28,7 @@ JNIEXPORT jint JNICALL Java_os_server_Socket_bind
     return bind(socket, &socketAddress, sizeof(socketAddress));
 }
 
-JNIEXPORT jint JNICALL Java_os_server_Socket_close
+JNIEXPORT jint JNICALL Java_os_socket_Socket_close
         (JNIEnv* env, jobject obj, jint socket) {
     return close(socket);
 }

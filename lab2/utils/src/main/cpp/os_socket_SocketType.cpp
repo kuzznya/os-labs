@@ -1,8 +1,8 @@
-#include "os_server_SocketType.h"
+#include "os_socket_SocketType.h"
 
 #include <sys/socket.h>
 
-JNIEXPORT jint JNICALL Java_os_server_SocketType_getNativeValue
+JNIEXPORT jint JNICALL Java_os_socket_SocketType_getNativeValue
         (JNIEnv* env, jobject obj, jint idx) {
     switch (idx) {
         case 0:

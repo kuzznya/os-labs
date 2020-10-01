@@ -1,8 +1,8 @@
-#include "os_server_Domain.h"
+#include "os_socket_Domain.h"
 
 #include <sys/socket.h>
 
-JNIEXPORT jshort JNICALL Java_os_server_Domain_getNativeValue
+JNIEXPORT jshort JNICALL Java_os_socket_Domain_getNativeValue
   (JNIEnv* env, jobject obj, jint idx) {
     switch (idx) {
         case 1:

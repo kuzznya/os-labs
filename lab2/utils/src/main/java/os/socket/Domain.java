@@ -1,5 +1,7 @@
 package os.socket;
 
+import os.utils.Loader;
+
 public enum Domain {
     AF_UNSPEC,
     AF_UNIX,
@@ -12,4 +14,8 @@ public enum Domain {
     }
 
     private native short getNativeValue(int idx);
+
+    static {
+        Loader.loadNativeLibrary();
+    }
 }

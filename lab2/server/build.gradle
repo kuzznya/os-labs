@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'com.github.kuzznya'
+version '0.0.1-SNAPSHOT'
+
+mainClassName = 'os.server.Main'
+
+dependencies {
+    implementation project(':utils')
+}

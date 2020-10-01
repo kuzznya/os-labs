@@ -1,5 +1,7 @@
 package os.socket;
 
+import os.utils.Loader;
+
 public class SocketAddress {
     private final Domain domain;
     private final char[] data;
@@ -29,5 +31,9 @@ public class SocketAddress {
 
     public int getSize() {
         return 2 + data.length;
+    }
+
+    static {
+        Loader.loadNativeLibrary();
     }
 }

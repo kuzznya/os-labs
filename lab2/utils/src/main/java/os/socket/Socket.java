@@ -1,5 +1,7 @@
 package os.socket;
 
+import os.utils.Loader;
+
 import java.io.Closeable;
 
 public class Socket implements Closeable {
@@ -9,7 +11,7 @@ public class Socket implements Closeable {
     private final int protocol;
 
     private boolean created = false;
-    private int descriptor = -1;
+    protected int descriptor = -1;
 
     public Socket(Domain domain, SocketType type) {
         this(domain, type, 0);
@@ -42,6 +44,6 @@ public class Socket implements Closeable {
     protected native int close(int descriptor);
 
     static {
-        System.loadLibrary("bridge");
+        Loader.loadNativeLibrary();
     }
 }
