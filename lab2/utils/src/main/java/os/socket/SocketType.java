@@ -12,7 +12,7 @@ public enum SocketType {
         return getNativeValue(this.ordinal());
     }
 
-    private native int getNativeValue(int idx);
+    private static native int getNativeValue(int idx);
 
     static {
         Loader.loadNativeLibrary();

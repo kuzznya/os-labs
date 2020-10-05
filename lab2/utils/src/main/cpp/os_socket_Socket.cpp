@@ -1,39 +1,34 @@
 #include "os_socket_Socket.h"
 
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
-#include <memory>
 
 #include <iostream>
 
 JNIEXPORT jint JNICALL Java_os_socket_Socket_socket
-        (JNIEnv* env, jobject obj, jshort domain, jint type, jint protocol) {
-    std::cout << "socket(): Defining socket with domain " << domain << ", type " << type << std::endl;
+        (JNIEnv* env, jclass c, jbyte domain, jint type, jint protocol) {
+    std::cout << "socket(): Defining socket with domain " << (short) domain << ", type " << type << std::endl;
     return socket(domain, type, protocol);
 }
 
 JNIEXPORT jint JNICALL Java_os_socket_Socket_bind
-        (JNIEnv* env, jobject obj, jint socket, jshort domain, jcharArray address) {
-    std::cout << "bind(): Binding socket " << socket << ", domain " << domain << std::endl;
+        (JNIEnv* env, jclass c, jint socket, jbyte domain, jbyteArray java_address_data) {
+    std::cout << "bind(): Binding socket " << socket << ", domain " << (short) domain << std::endl;
 
-    jboolean isCopy = true;
-    char* addressData = reinterpret_cast<char*>(
-            env->GetCharArrayElements(address, &isCopy)
-            );
-    int addressSize = env->GetArrayLength(address);
+    jbyte* address_data = env->GetByteArrayElements(java_address_data, nullptr);
+    int data_size = env->GetArrayLength(java_address_data);
 
-    sockaddr socketAddress{};
-    socketAddress.sa_family = domain;
-    for (int i = 0; i < 14 && i < addressSize; i++)
-        socketAddress.sa_data[i] = addressData[i];
-    delete[] addressData;
+    sockaddr address{17, static_cast<sa_family_t>(domain)};
 
-    return bind(socket, &socketAddress, sizeof(socketAddress));
+    for (int i = 0; i < sizeof(sockaddr::sa_data) && i < data_size; i++)
+        address.sa_data[i] = static_cast<char>(address_data[i]);
+    env->ReleaseByteArrayElements(java_address_data, reinterpret_cast<jbyte*>(address_data), 0);
+
+    return bind(socket, &address, sizeof(address));
 }
 
 JNIEXPORT jint JNICALL Java_os_socket_Socket_close
-        (JNIEnv* env, jobject obj, jint socket) {
+        (JNIEnv* env, jclass c, jint socket) {
     std::cout << "close(): Closing socket " << socket << std::endl;
 
     return close(socket);

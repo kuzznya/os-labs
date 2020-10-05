@@ -2,8 +2,8 @@
 
 #include <sys/socket.h>
 
-JNIEXPORT jshort JNICALL Java_os_socket_Domain_getNativeValue
-  (JNIEnv* env, jobject obj, jint idx) {
+JNIEXPORT jbyte JNICALL Java_os_socket_Domain_getNativeValue
+  (JNIEnv* env, jclass c, jint idx) {
     switch (idx) {
         case 1:
             return AF_UNIX;

@@ -5,8 +5,11 @@ import os.socket.*;
 public class Main {
 
     public static void main(String[] args) {
-        Socket socket = new Socket(Domain.AF_INET, SocketType.SOCK_STREAM);
+        ServerSocket socket = new ServerSocket();
         socket.create();
+        socket.bind(new InetSocketAddress((short) 8080));
+        socket.listen();
+        socket.accept();
         socket.close();
     }
 }

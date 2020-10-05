@@ -3,6 +3,7 @@ package os.socket;
 import os.utils.Loader;
 
 import java.io.Closeable;
+import java.util.Arrays;
 
 public class Socket implements Closeable {
 
@@ -27,11 +28,15 @@ public class Socket implements Closeable {
         if (created)
             return;
         descriptor = socket(domain.getNativeValue(), type.getNativeValue(), protocol);
+        if (descriptor < 0)
+            throw new RuntimeException("Cannot create socket");
         created = true;
     }
 
     public void bind(SocketAddress address) {
-        bind(descriptor, domain.getNativeValue(), address.toCharArray());
+        int result = bind(descriptor, domain.getNativeValue(), address.getAddressData());
+        if (result < 0)
+            throw new RuntimeException("Cannot bind socket");
     }
 
     @Override
@@ -39,9 +44,9 @@ public class Socket implements Closeable {
         close(descriptor);
     }
 
-    protected native int socket(short domain, int type, int protocol);
-    protected native int bind(int descriptor, short domain, char[] addressData);
-    protected native int close(int descriptor);
+    protected static native int socket(byte domain, int type, int protocol);
+    protected static native int bind(int descriptor, byte domain, byte[] addressData);
+    protected static native int close(int descriptor);
 
     static {
         Loader.loadNativeLibrary();

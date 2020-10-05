@@ -32,10 +32,12 @@ model {
                     cppCompiler.args '-mmacosx-version-min=10.9'
                     cppCompiler.args '-stdlib=libc++'
                     cppCompiler.args '-std=c++14'
+                    cppCompiler.args '-pthread'
                     cppCompiler.args '-O2'
 
                     linker.args '-mmacosx-version-min=10.9'
                     linker.args '-lc++'
+                    linker.args '-pthread'
                     linker.args '-O2'
 
                 } else if (targetPlatform.operatingSystem.linux) {
@@ -44,9 +46,11 @@ model {
                     cppCompiler.args '-D_FILE_OFFSET_BITS=64'
                     cppCompiler.args '-std=c++14'
                     cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-pthread'
                     cppCompiler.args '-O2'
 
                     linker.args '-lstdc++'
+                    linker.args '-pthread'
                     linker.args '-O2'
 
                 } else if (targetPlatform.operatingSystem.windows) {
@@ -54,19 +58,23 @@ model {
                     cppCompiler.args "-I${Jvm.current().javaHome}/include/win32"
                     cppCompiler.args '-std=c++14'
                     cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-pthread'
                     cppCompiler.args '-O2'
 
                     linker.args "Shlwapi.lib", "Advapi32.lib"
                     linker.args '-lstdc++'
+                    linker.args '-pthread'
                     linker.args '-O2'
                 } else if (targetPlatform.operatingSystem.freeBSD) {
                     cppCompiler.args '-I', "${Jvm.current().javaHome}/include"
                     cppCompiler.args '-I', "${Jvm.current().javaHome}/include/freebsd"
                     cppCompiler.args '-std=c++14'
                     cppCompiler.args '-stdlib=libc++'
+                    cppCompiler.args '-pthread'
                     cppCompiler.args '-O2'
 
                     linker.args '-lstdc++'
+                    linker.args '-pthread'
                     linker.args '-O2'
                 }
             }
@@ -74,8 +82,12 @@ model {
     }
 }
 
+compileJava {
+    finalizedBy "bridgeSharedLibrary"
+}
+
 jar {
-    dependsOn("bridgeStaticLibrary", "bridgeSharedLibrary")
+    dependsOn("bridgeSharedLibrary")
     from("${project.buildDir}/libs/bridge/shared") {
         into "libs"
     }
