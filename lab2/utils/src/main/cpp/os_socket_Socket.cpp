@@ -27,6 +27,39 @@ JNIEXPORT jint JNICALL Java_os_socket_Socket_bind
     return bind(socket, &address, sizeof(address));
 }
 
+JNIEXPORT jint JNICALL Java_os_socket_Socket_recv
+        (JNIEnv* env, jclass c, jint socket, jbyteArray buffer) {
+    jbyte* buffer_data = env->GetByteArrayElements(buffer, JNI_FALSE);
+    int data_size = env->GetArrayLength(buffer);
+
+    jint result = recv(socket, buffer_data, data_size, 0);
+    std::cout << "RESULT: " << result << std::endl;
+    for (int i = 0; i < result; i++)
+        std::cout << buffer_data[i];
+    env->ReleaseByteArrayElements(buffer, buffer_data, 0);
+    return result;
+}
+
+JNIEXPORT jint JNICALL Java_os_socket_Socket_send
+        (JNIEnv* env, jclass c, jint socket, jbyteArray buffer) {
+    jbyte* buffer_data = env->GetByteArrayElements(buffer, JNI_FALSE);
+    int data_size = env->GetArrayLength(buffer);
+
+    int total = 0;
+    int n = 0;
+
+    while(total < data_size)
+    {
+        n = send(socket, buffer_data + total, data_size - total, 0);
+        if(n == -1) { break; }
+        total += n;
+    }
+
+    env->ReleaseByteArrayElements(buffer, buffer_data, 0);
+
+    return (n == -1 ? -1 : total);
+}
+
 JNIEXPORT jint JNICALL Java_os_socket_Socket_close
         (JNIEnv* env, jclass c, jint socket) {
     std::cout << "close(): Closing socket " << socket << std::endl;

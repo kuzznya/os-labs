@@ -10,14 +10,13 @@ JNIEXPORT jint JNICALL Java_os_socket_ServerSocket_listen
     return listen(socket, backlog);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_os_socket_ServerSocket_accept
-        (JNIEnv* env, jclass c, jint socket) {
+JNIEXPORT jint JNICALL Java_os_socket_ServerSocket_accept
+        (JNIEnv* env, jclass c, jint socket, jbyteArray client_addr_buf) {
+    std::cout << "accept(): Accepting incoming connection" << std::endl;
+
     sockaddr client_addr{};
     socklen_t len = sizeof(client_addr);
     int code = accept(socket, &client_addr, &len);
-    if (code < 0)
-        return env->NewByteArray(0);
-    jbyteArray result = env->NewByteArray(len);
-    env->SetByteArrayRegion(result, 0, len, (jbyte *) (&(client_addr.sa_family)));
-    return result;
+    env->SetByteArrayRegion(client_addr_buf, 0, len, (jbyte *) (&(client_addr.sa_family)));
+    return code;
 }
