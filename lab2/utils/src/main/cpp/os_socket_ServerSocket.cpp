@@ -2,8 +2,6 @@
 
 #include <sys/socket.h>
 
-#include <iostream>
-
 JNIEXPORT jint JNICALL Java_os_socket_ServerSocket_listen__I
         (JNIEnv* env, jclass c, jint socket) {
     return listen(socket, SOMAXCONN);

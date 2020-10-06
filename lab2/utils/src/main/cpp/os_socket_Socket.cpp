@@ -3,8 +3,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <iostream>
-
 JNIEXPORT jint JNICALL Java_os_socket_Socket_socket
         (JNIEnv* env, jclass c, jbyte domain, jint type, jint protocol) {
     return socket(domain, type, protocol);
