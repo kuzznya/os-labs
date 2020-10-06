@@ -7,14 +7,11 @@
 
 JNIEXPORT jint JNICALL Java_os_socket_Socket_socket
         (JNIEnv* env, jclass c, jbyte domain, jint type, jint protocol) {
-    std::cout << "socket(): Defining socket with domain " << (short) domain << ", type " << type << std::endl;
     return socket(domain, type, protocol);
 }
 
 JNIEXPORT jint JNICALL Java_os_socket_Socket_bind
         (JNIEnv* env, jclass c, jint socket, jbyte domain, jbyteArray java_address_data) {
-    std::cout << "bind(): Binding socket " << socket << ", domain " << (short) domain << std::endl;
-
     jbyte* address_data = env->GetByteArrayElements(java_address_data, nullptr);
     int data_size = env->GetArrayLength(java_address_data);
 
@@ -59,7 +56,5 @@ JNIEXPORT jint JNICALL Java_os_socket_Socket_send
 
 JNIEXPORT jint JNICALL Java_os_socket_Socket_close
         (JNIEnv* env, jclass c, jint socket) {
-    std::cout << "close(): Closing socket " << socket << std::endl;
-
     return close(socket);
 }

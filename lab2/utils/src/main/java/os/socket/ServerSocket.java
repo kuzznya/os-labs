@@ -11,7 +11,7 @@ public class ServerSocket extends Socket {
     }
 
     public void listen() {
-        int result = listen(this.descriptor, 5);
+        int result = listen(this.descriptor);
         if (result < 0)
             throw new RuntimeException("Error occurred while trying to listen to connections");
     }
@@ -28,6 +28,7 @@ public class ServerSocket extends Socket {
         return new Socket(clientDomain, SocketType.SOCK_STREAM, 0, clientDescriptor, clientAddress);
     }
 
+    protected static native int listen(int descriptor);
     protected static native int listen(int descriptor, int backlog);
 
     protected static native int accept(int descriptor, byte[] buffer);
