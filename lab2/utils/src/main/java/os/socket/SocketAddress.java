@@ -23,6 +23,7 @@ public class SocketAddress {
         return Arrays.copyOf(data, data.length);
     }
 
+
     static {
         Loader.loadNativeLibrary();
     }

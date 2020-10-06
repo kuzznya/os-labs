@@ -14,6 +14,7 @@ public enum SocketType {
 
     private static native int getNativeValue(int idx);
 
+
     static {
         Loader.loadNativeLibrary();
     }

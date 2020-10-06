@@ -101,10 +101,6 @@ public class Socket implements Closeable {
     protected static native int send(int descriptor, byte[] buffer);
     protected static native int close(int descriptor);
 
-    static {
-        Loader.loadNativeLibrary();
-    }
-
 
     private class SocketInputStream extends InputStream {
 
@@ -158,5 +154,10 @@ public class Socket implements Closeable {
             if (len < b.length)
                 throw new IOException("Socket sending error");
         }
+    }
+
+
+    static {
+        Loader.loadNativeLibrary();
     }
 }
