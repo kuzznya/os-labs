@@ -1,6 +1,8 @@
 package os.server;
 
-import os.socket.*;
+import os.socket.InetSocketAddress;
+import os.socket.ServerSocket;
+import os.socket.Socket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +10,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Main {
 
@@ -16,22 +17,18 @@ public class Main {
         try (ServerSocket socket = new ServerSocket()) {
             socket.create();
             socket.bind(new InetSocketAddress((short) 8080));
+            socket.listen();
             while (true) {
-                socket.listen();
                 try (Socket client = socket.accept()) {
-//                    BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-//                    StringBuilder lines = new StringBuilder();
-//
-//                    String line = reader.readLine();
-//                    while (line != null && !line.isEmpty()) {
-//                        line = reader.readLine();
-//                        if (line == null || line.isEmpty())
-//                            break;
-//                        lines.append(line).append("\r\n");
-//                    }
-                    byte[] buffer = new byte[1024];
-                    int len = client.getInputStream().read(buffer);
-                    String lines = new String(buffer, 0, len);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                    StringBuilder lines = new StringBuilder();
+
+                    while (true) {
+                        String line = reader.readLine();
+                        if (line == null)
+                            break;
+                        lines.append(line).append("\r\n");
+                    }
 
                     Map<String, String> headers = Map.of(
                             "Connection", "keep-alive",

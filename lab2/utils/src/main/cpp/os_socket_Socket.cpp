@@ -33,9 +33,6 @@ JNIEXPORT jint JNICALL Java_os_socket_Socket_recv
     int data_size = env->GetArrayLength(buffer);
 
     jint result = recv(socket, buffer_data, data_size, 0);
-    std::cout << "RESULT: " << result << std::endl;
-    for (int i = 0; i < result; i++)
-        std::cout << buffer_data[i];
     env->ReleaseByteArrayElements(buffer, buffer_data, 0);
     return result;
 }

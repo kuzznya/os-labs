@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 public class Socket implements Closeable {
 
@@ -105,36 +106,32 @@ public class Socket implements Closeable {
     }
 
 
-    // FIXME: 05.10.2020 IS NOT WORKING
     private class SocketInputStream extends InputStream {
+
+        private static final int BUFFER_SIZE = 4096;
+        private byte[] buffer = new byte[BUFFER_SIZE];
+        int pos = 0;
+        int len = 0;
+        boolean wasRead = false;
+
+        SocketInputStream() {
+            Arrays.fill(buffer, (byte) -1);
+        }
+
         @Override
         public int read() throws IOException {
             if (closed)
                 throw new IOException("Socket is closed");
 
-            byte[] buffer = new byte[1];
-            int len = recv(descriptor, buffer);
+            if (len == BUFFER_SIZE && pos == BUFFER_SIZE || !wasRead) {
+                len = recv(descriptor, buffer);
+                pos = 0;
+                wasRead = true;
+            }
 
-//            System.out.print((char) buffer[0]);
-//            System.out.println(" LEN=" + len);
-
-            if (len == 0 || len == -1) {
-                System.out.println("END"); return -1;}
-            else
-                return buffer[0];
-        }
-
-        @Override
-        public int read(byte[] b) throws IOException {
-            if (closed)
-                throw new IOException("Socket is closed");
-
-            int len = recv(descriptor, b);
-
-            if (len == 0)
+            if (pos >= len)
                 return -1;
-            else
-                return len;
+            return buffer[pos++];
         }
     }
 
