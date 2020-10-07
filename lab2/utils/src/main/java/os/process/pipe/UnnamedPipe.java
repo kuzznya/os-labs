@@ -1,28 +1,27 @@
-package os.process;
+package os.process.pipe;
 
 import os.utils.Loader;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-public class Pipe implements Closeable {
+public class UnnamedPipe implements ReadPipe, WritePipe {
 
 //    <READ descriptor> <WRITE descriptor>
     private final int[] descriptors = new int[2];
-    private State state;
+    private PipeState state;
 
     private PipeInputStream inputStream = null;
     private PipeOutputStream outputStream = null;
 
-    public Pipe() {
+    public UnnamedPipe() {
         init(descriptors);
-        state = State.READ_WRITE;
+        state = PipeState.READ_WRITE;
     }
 
-    public Pipe(int[] descriptors, State state) {
+    public UnnamedPipe(int[] descriptors, PipeState state) {
         if (descriptors.length != 2)
             throw new IllegalArgumentException("descriptors count should always be 2");
         this.descriptors[0] = descriptors[0];
@@ -30,6 +29,12 @@ public class Pipe implements Closeable {
         this.state = state;
     }
 
+    @Override
+    public PipeState getState() {
+        return state;
+    }
+
+    @Override
     public InputStream getInputStream() {
         if (inputStream == null)
             inputStream = new PipeInputStream();
@@ -37,6 +42,7 @@ public class Pipe implements Closeable {
         return inputStream;
     }
 
+    @Override
     public OutputStream getOutputStream() {
         if (outputStream == null)
             outputStream = new PipeOutputStream();
@@ -48,31 +54,33 @@ public class Pipe implements Closeable {
     public void close() {
         closeRead();
         closeWrite();
-        state = State.CLOSED;
+        state = PipeState.CLOSED;
     }
 
+    @Override
     public void closeRead() {
-        if (state == State.CLOSED || state == State.WRITE)
+        if (state == PipeState.CLOSED || state == PipeState.WRITE)
             return;
 
         closeReadNative(descriptors[0]);
 
-        if (state == State.READ_WRITE)
-            state = State.WRITE;
-        else if (state == State.READ)
-            state = State.CLOSED;
+        if (state == PipeState.READ_WRITE)
+            state = PipeState.WRITE;
+        else if (state == PipeState.READ)
+            state = PipeState.CLOSED;
     }
 
+    @Override
     public void closeWrite() {
-        if (state == State.CLOSED || state == State.READ)
+        if (state == PipeState.CLOSED || state == PipeState.READ)
             return;
 
         closeWriteNative(descriptors[1]);
 
-        if (state == State.READ_WRITE)
-            state = State.READ;
-        else if (state == State.WRITE)
-            state = State.CLOSED;
+        if (state == PipeState.READ_WRITE)
+            state = PipeState.READ;
+        else if (state == PipeState.WRITE)
+            state = PipeState.CLOSED;
     }
 
     private static native void init(int[] descriptors);
@@ -81,22 +89,6 @@ public class Pipe implements Closeable {
 
     private static native int read(int readDescriptor, byte[] buffer);
     private static native int write(int writeDescriptor, byte[] buffer);
-
-
-    public enum State {
-        READ_WRITE,
-        READ,
-        WRITE,
-        CLOSED;
-
-        public boolean readable() {
-            return this == State.READ_WRITE || this == State.READ;
-        }
-
-        public boolean writable() {
-            return this == State.READ_WRITE || this == State.WRITE;
-        }
-    }
 
     private class PipeInputStream extends InputStream {
 
@@ -116,7 +108,7 @@ public class Pipe implements Closeable {
                 throw new IOException("Pipe is not readable");
 
             if (len == BUFFER_SIZE && pos == BUFFER_SIZE || !wasRead) {
-                len = Pipe.read(descriptors[0], buffer);
+                len = UnnamedPipe.read(descriptors[0], buffer);
                 pos = 0;
                 wasRead = true;
             }
@@ -128,7 +120,7 @@ public class Pipe implements Closeable {
 
         @Override
         public void close() {
-            Pipe.this.closeRead();
+            UnnamedPipe.this.closeRead();
         }
     }
 
@@ -139,7 +131,7 @@ public class Pipe implements Closeable {
                 throw new IOException("Pipe is not writable");
 
             byte[] buffer = {(byte) (b & 0xFF)};
-            int result = Pipe.write(descriptors[1], buffer);
+            int result = UnnamedPipe.write(descriptors[1], buffer);
 
             if (result < 0)
                 throw new IOException("Pipe writing error");
@@ -150,7 +142,7 @@ public class Pipe implements Closeable {
             if (!state.writable())
                 throw new IOException("Pipe is not writable");
 
-            int result = Pipe.write(descriptors[1], b);
+            int result = UnnamedPipe.write(descriptors[1], b);
 
             if (result < 0)
                 throw new IOException("Pipe writing error");
@@ -158,7 +150,7 @@ public class Pipe implements Closeable {
 
         @Override
         public void close() {
-            Pipe.this.closeWrite();
+            UnnamedPipe.this.closeWrite();
         }
     }
 

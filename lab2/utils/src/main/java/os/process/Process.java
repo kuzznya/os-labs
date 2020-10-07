@@ -1,19 +1,22 @@
 package os.process;
 
+import os.process.pipe.ReadPipe;
+import os.process.pipe.WritePipe;
+
 import java.util.Optional;
 
 public class Process {
 
     private final int PID;
 
-    private Pipe readPipe = null;
-    private Pipe writePipe = null;
+    private ReadPipe readPipe = null;
+    private WritePipe writePipe = null;
 
     public Process(int PID) {
         this.PID = PID;
     }
 
-    public Process(int PID, Pipe readPipe, Pipe writePipe) {
+    public Process(int PID, ReadPipe readPipe, WritePipe writePipe) {
         this.PID = PID;
         this.readPipe = readPipe;
         this.writePipe = writePipe;
@@ -23,11 +26,11 @@ public class Process {
         return PID;
     }
 
-    public Optional<Pipe> getReadPipe() {
+    public Optional<ReadPipe> getReadPipe() {
         return Optional.ofNullable(readPipe);
     }
 
-    public Optional<Pipe> getWritePipe() {
+    public Optional<WritePipe> getWritePipe() {
         return Optional.ofNullable(writePipe);
     }
 

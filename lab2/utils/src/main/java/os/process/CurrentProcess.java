@@ -1,5 +1,6 @@
 package os.process;
 
+import os.process.pipe.UnnamedPipe;
 import os.utils.Loader;
 
 import java.util.ArrayList;
@@ -12,8 +13,8 @@ public class CurrentProcess {
 
     private static final List<Process> children = new ArrayList<>();
 
-    private static Pipe parentReadPipe = null;
-    private static Pipe parentWritePipe = null;
+    private static UnnamedPipe parentReadPipe = null;
+    private static UnnamedPipe parentWritePipe = null;
 
     public static ForkStatus getForkStatus() {
         return forkStatus;
@@ -23,11 +24,11 @@ public class CurrentProcess {
         return children;
     }
 
-    public static Optional<Pipe> getParentReadPipe() {
+    public static Optional<UnnamedPipe> getParentReadPipe() {
         return Optional.ofNullable(parentReadPipe);
     }
 
-    public static Optional<Pipe> getParentWritePipe() {
+    public static Optional<UnnamedPipe> getParentWritePipe() {
         return Optional.ofNullable(parentWritePipe);
     }
 
@@ -52,7 +53,7 @@ public class CurrentProcess {
     }
 
     public static void forkWithPipe() {
-        Pipe childWritePipe = new Pipe();
+        UnnamedPipe childWritePipe = new UnnamedPipe();
 
         int result = callFork();
 
@@ -72,8 +73,8 @@ public class CurrentProcess {
     }
 
     public static void forkWithPipes() {
-        Pipe childReadPipe = new Pipe();
-        Pipe childWritePipe = new Pipe();
+        UnnamedPipe childReadPipe = new UnnamedPipe();
+        UnnamedPipe childWritePipe = new UnnamedPipe();
 
         int result = callFork();
 
