@@ -10,6 +10,11 @@ public class ServerSocket extends Socket {
         super(Domain.AF_INET, SocketType.SOCK_STREAM);
     }
 
+    public ServerSocket(short port) {
+        super(Domain.AF_INET, SocketType.SOCK_STREAM);
+        bind(new InetSocketAddress(port));
+    }
+
     public void listen() {
         int result = listen(this.descriptor);
         if (result < 0)

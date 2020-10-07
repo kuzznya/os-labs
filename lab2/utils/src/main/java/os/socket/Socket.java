@@ -25,20 +25,27 @@ public class Socket implements Closeable {
     private SocketInputStream inputStream = null;
     private SocketOutputStream outputStream = null;
 
-    public Socket(Domain domain, SocketType type) {
-        this(domain, type, 0);
-    }
-
-    public Socket(Domain domain, SocketType type, int protocol) {
+    private Socket(Domain domain, SocketType type, int protocol, boolean created) {
         this.domain = domain;
         this.type = type;
         this.protocol = protocol;
+        this.created = created;
+
+        if (!created)
+            init();
+    }
+
+    public Socket(Domain domain, SocketType type) {
+        this(domain, type, 0, false);
+    }
+
+    public Socket(Domain domain, SocketType type, int protocol) {
+        this(domain, type, protocol, false);
     }
 
     protected Socket(Domain domain, SocketType type, int protocol, int descriptor) {
-        this(domain, type, protocol);
+        this(domain, type, protocol, true);
         this.descriptor = descriptor;
-        this.created = true;
     }
 
     protected Socket(Domain domain, SocketType type, int protocol, int descriptor, SocketAddress address) {
@@ -59,7 +66,7 @@ public class Socket implements Closeable {
         return protocol;
     }
 
-    public void create() {
+    public void init() {
         if (created)
             return;
         descriptor = socket(domain.getNativeValue(), type.getNativeValue(), protocol);

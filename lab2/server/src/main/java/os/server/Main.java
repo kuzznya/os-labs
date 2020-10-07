@@ -55,9 +55,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        try (ServerSocket server = new ServerSocket()) {
-            server.create();
-            server.bind(new InetSocketAddress((short) 8080));
+        try (ServerSocket server = new ServerSocket((short) 8080)) {
             server.listen();
             while (true) {
                 try (Socket client = server.accept()) {
