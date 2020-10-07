@@ -1,11 +1,11 @@
 package os.server;
 
 import os.process.CurrentProcess;
-import os.process.Process;
+import os.socket.InetSocketAddress;
+import os.socket.ServerSocket;
 import os.socket.Socket;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -55,82 +55,22 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        try (ServerSocket server = new ServerSocket()) {
-//            server.create();
-//            server.bind(new InetSocketAddress((short) 8080));
-//            server.listen();
-//            while (true) {
-//                try (Socket client = server.accept()) {
-//                    CurrentProcess.childRun(() -> {
-//                        echoClientRequest(client);
-//                        System.out.println(CurrentProcess.getForkStatus() +  ": Exiting now");
-//                        client.close();
-//                        server.close();
-//                        System.exit(0);
-//                    });
-//                    System.out.println(CurrentProcess.getForkStatus().name() + ": I'm alive");
-//                }
-//            }
-//        }
-        CurrentProcess.forkWithPipes();
-
-        if (CurrentProcess.getForkStatus() == CurrentProcess.ForkStatus.CHILD) {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            CurrentProcess
-                                    .getParentReadPipe()
-                                    .orElseThrow()
-                                    .getInputStream()
-                    )
-            );
-
-            try {
-                System.out.println(CurrentProcess.getForkStatus() + " " + reader.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
+        try (ServerSocket server = new ServerSocket()) {
+            server.create();
+            server.bind(new InetSocketAddress((short) 8080));
+            server.listen();
+            while (true) {
+                try (Socket client = server.accept()) {
+                    CurrentProcess.childRun(() -> {
+                        echoClientRequest(client);
+                        System.out.println(CurrentProcess.getForkStatus() +  ": Exiting now");
+                        client.close();
+                        server.close();
+                        System.exit(0);
+                    });
+                    System.out.println(CurrentProcess.getForkStatus().name() + ": I'm alive");
+                }
             }
-
-            try {
-                CurrentProcess
-                        .getParentWritePipe()
-                        .orElseThrow()
-                        .getOutputStream()
-                        .write("VERY IMPORTANT RESPONSE".getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            int last = CurrentProcess.getChildren().size() == 1 ? 0 : CurrentProcess.getChildren().size() - 2;
-            try {
-                CurrentProcess
-                        .getChildren()
-                        .get(last)
-                        .getWritePipe()
-                        .orElseThrow()
-                        .getOutputStream()
-                        .write("VERY IMPORTANT MESSAGE".getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            CurrentProcess
-                                    .getChildren()
-                                    .get(last)
-                                    .getReadPipe()
-                                    .orElseThrow()
-                                    .getInputStream()
-                    )
-            );
-
-            try {
-                System.out.println(CurrentProcess.getForkStatus() + " " + reader.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            CurrentProcess.getChildren().forEach(Process::kill);
         }
     }
 }
