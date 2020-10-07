@@ -1,39 +1,37 @@
 package os.process;
 
-import os.utils.Loader;
+import java.util.Optional;
 
 public class Process {
 
-    private static Status processStatus = Status.PARENT;
+    private final int PID;
 
-    public static Status getStatus() {
-        return processStatus;
+    private Pipe readPipe = null;
+    private Pipe writePipe = null;
+
+    public Process(int PID) {
+        this.PID = PID;
     }
 
-    public static <T> void childRun(Runnable child) {
-        fork();
-        if (processStatus == Status.CHILD)
-            child.run();
+    public Process(int PID, Pipe readPipe, Pipe writePipe) {
+        this.PID = PID;
+        this.readPipe = readPipe;
+        this.writePipe = writePipe;
     }
 
-    public static void fork() {
-        int result = callFork();
-        if (result == 0)
-            processStatus = Status.CHILD;
-        else if (result > 0)
-            processStatus = Status.PARENT;
-        else
-            throw new RuntimeException("Process forking failed");
+    public int getPID() {
+        return PID;
     }
 
-    private static native int callFork();
-
-    public enum Status {
-        PARENT,
-        CHILD
+    public Optional<Pipe> getReadPipe() {
+        return Optional.ofNullable(readPipe);
     }
 
-    static {
-        Loader.loadNativeLibrary();
+    public Optional<Pipe> getWritePipe() {
+        return Optional.ofNullable(writePipe);
+    }
+
+    public void kill() {
+        CurrentProcess.kill(PID);
     }
 }
