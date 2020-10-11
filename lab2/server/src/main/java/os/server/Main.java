@@ -71,7 +71,7 @@ public class Main {
 
         Server server = new Server(8080);
         server.registerMapping("/test", request ->
-                new Response(ResponseStatus.OK, "/test", new LinkedHashMap<>(), "HELLO"));
+                new Response(ResponseStatus.OK, "/test(/*)?", new LinkedHashMap<>(), "HELLO"));
         server.setDefaultMapping(request ->
                 new Response(ResponseStatus.IM_A_TEAPOT, "/", new LinkedHashMap<>(), "I'm a teapot"));
         server.run();

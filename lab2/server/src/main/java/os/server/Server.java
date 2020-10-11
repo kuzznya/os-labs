@@ -7,10 +7,11 @@ import os.socket.Socket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 public class Server {
 
@@ -66,8 +67,18 @@ public class Server {
             Request request = Request.parse(requestBuilder.toString());
 
             Response response = null;
-            if (mappings.containsKey(request.getPath()))
-                response = mappings.get(request.getPath()).apply(request);
+            Optional<String> mappingKey = mappings
+                    .keySet()
+                    .stream()
+                    .filter(key -> Pattern
+                            .compile(key)
+                            .matcher(request.getPath())
+                            .find()
+                    )
+                    .findFirst();
+
+            if (mappingKey.isPresent())
+                response = mappings.get(mappingKey.get()).apply(request);
             else if (defaultMapping != null)
                 response = defaultMapping.apply(request);
 
