@@ -7,6 +7,7 @@ import os.socket.Socket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class Server {
                                     "/",
                                     new LinkedHashMap<>(),
                                     ex != null ? ex.getMessage() : ""
-                            ).toString().getBytes()
+                            ).toString().getBytes(StandardCharsets.UTF_8)
                     );
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,7 +84,8 @@ public class Server {
                 response = defaultMapping.apply(request);
 
             if (response != null)
-                client.getOutputStream().write(response.toString().getBytes());
+                client.getOutputStream()
+                        .write(response.toString().getBytes(StandardCharsets.UTF_8));
             else
                 handleError(client, null, ResponseStatus.NOT_FOUND);
 
