@@ -3,11 +3,9 @@ package os.process;
 import os.process.pipe.UnnamedPipe;
 import os.utils.Loader;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class CurrentProcess {
+public class Runtime {
 
     private static ForkStatus forkStatus = ForkStatus.PARENT;
 
@@ -15,6 +13,8 @@ public class CurrentProcess {
 
     private static UnnamedPipe parentReadPipe = null;
     private static UnnamedPipe parentWritePipe = null;
+
+    private static Map<String, Runnable> shutdownHooks = new LinkedHashMap<>();
 
     public static ForkStatus getForkStatus() {
         return forkStatus;
@@ -39,6 +39,7 @@ public class CurrentProcess {
     }
 
     public static void fork() {
+        System.out.println("FORK");
         int result = callFork();
         if (result == 0) {
             forkStatus = ForkStatus.CHILD;
@@ -103,6 +104,22 @@ public class CurrentProcess {
     public static native void kill(int PID, int signal);
 
     private static native int callFork();
+
+    private static void addShutdownHook(String name, Runnable hook) {
+        shutdownHooks.put(name, hook);
+    }
+
+    private static void removeShutdownHook(String name, Runnable hook) {
+        shutdownHooks.remove(name);
+    }
+
+    private static void exit() {
+        try {
+            shutdownHooks.values().forEach(Runnable::run);
+        } finally {
+            java.lang.Runtime.getRuntime().halt(0);
+        }
+    }
 
     public enum ForkStatus {
         PARENT,

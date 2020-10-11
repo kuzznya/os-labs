@@ -1,7 +1,7 @@
 package os.server;
 
-import os.process.CurrentProcess;
-import os.socket.InetSocketAddress;
+import os.process.Runtime;
+import os.process.Signal;
 import os.socket.ServerSocket;
 import os.socket.Socket;
 
@@ -56,17 +56,24 @@ public class Main {
 
     public static void main(String[] args) {
         try (ServerSocket server = new ServerSocket((short) 8080)) {
+            Signal.addHook(Signal.SIGTERM, () -> {
+//                server.close();
+                System.exit(0);
+            });
+
+            Signal.removeHook(Signal.SIGTERM);
+
             server.listen();
             while (true) {
                 try (Socket client = server.accept()) {
-                    CurrentProcess.childRun(() -> {
+                    Runtime.childRun(() -> {
                         echoClientRequest(client);
-                        System.out.println(CurrentProcess.getForkStatus() +  ": Exiting now");
+                        System.out.println(Runtime.getForkStatus() +  ": Exiting now");
                         client.close();
                         server.close();
                         System.exit(0);
                     });
-                    System.out.println(CurrentProcess.getForkStatus().name() + ": I'm alive");
+                    System.out.println(Runtime.getForkStatus().name() + ": I'm alive");
                 }
             }
         }

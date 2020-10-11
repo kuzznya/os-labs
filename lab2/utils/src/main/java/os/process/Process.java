@@ -35,6 +35,6 @@ public class Process {
     }
 
     public void kill() {
-        CurrentProcess.kill(PID);
+        Runtime.kill(PID);
     }
 }
