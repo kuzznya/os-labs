@@ -1,5 +1,6 @@
 package os.server;
 
+import os.process.Process;
 import os.process.Runtime;
 import os.process.Signal;
 import os.socket.ServerSocket;
@@ -57,11 +58,15 @@ public class Main {
     public static void main(String[] args) {
         try (ServerSocket server = new ServerSocket((short) 8080)) {
             Signal.addHook(Signal.SIGTERM, () -> {
+                System.out.println(Runtime.getForkStatus() + " SIGTERM");
+                Runtime.getChildren().forEach(Process::kill);
 //                server.close();
+                Runtime.exit();
+            });
+            Signal.addHook(Signal.SIGSTOP, () -> {
+                System.out.println(Runtime.getForkStatus() + " SIGSTOP");
                 System.exit(0);
             });
-
-            Signal.removeHook(Signal.SIGTERM);
 
             server.listen();
             while (true) {
@@ -71,7 +76,7 @@ public class Main {
                         System.out.println(Runtime.getForkStatus() +  ": Exiting now");
                         client.close();
                         server.close();
-                        System.exit(0);
+                        Runtime.exit();
                     });
                     System.out.println(Runtime.getForkStatus().name() + ": I'm alive");
                 }

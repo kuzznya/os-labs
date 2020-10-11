@@ -113,7 +113,7 @@ public class Runtime {
         shutdownHooks.remove(name);
     }
 
-    private static void exit() {
+    public static void exit() {
         try {
             shutdownHooks.values().forEach(Runnable::run);
         } finally {
