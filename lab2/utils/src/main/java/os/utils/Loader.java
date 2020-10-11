@@ -15,7 +15,7 @@ public class Loader {
             return OperatingSystem.WINDOWS;
         if (name.contains("mac"))
             return OperatingSystem.MAC;
-        if (name.contains("nix"))
+        if (name.contains("nix") || name.contains("bsd"))
             return OperatingSystem.UNIX;
         return OperatingSystem.UNSPECIFIED;
     }

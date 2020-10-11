@@ -18,11 +18,14 @@ model {
                 architecture "x86"
             }
         }
+	x64 {
+	    architecture "x64"
+	}
     }
 
     components {
         bridge(NativeLibrarySpec) {
-            targetPlatform "x86"
+            targetPlatform "x64"
 
             sources {
                 cpp {
