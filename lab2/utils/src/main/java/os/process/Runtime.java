@@ -114,6 +114,7 @@ public class Runtime {
     }
 
     public static void exit() {
+        System.out.println("Exiting now");
         try {
             shutdownHooks.values().forEach(Runnable::run);
         } finally {

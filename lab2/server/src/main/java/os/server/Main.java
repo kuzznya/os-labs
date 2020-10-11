@@ -3,13 +3,14 @@ package os.server;
 import os.process.Process;
 import os.process.Runtime;
 import os.process.Signal;
-import os.socket.ServerSocket;
 import os.socket.Socket;
+import os.utils.Loader;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Main {
@@ -56,31 +57,23 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        try (ServerSocket server = new ServerSocket((short) 8080)) {
-            Signal.addHook(Signal.SIGTERM, () -> {
-                System.out.println(Runtime.getForkStatus() + " SIGTERM");
-                Runtime.getChildren().forEach(Process::kill);
-//                server.close();
-                Runtime.exit();
-            });
-            Signal.addHook(Signal.SIGSTOP, () -> {
-                System.out.println(Runtime.getForkStatus() + " SIGSTOP");
-                System.exit(0);
-            });
+        Loader.loadNativeLibrary();
 
-            server.listen();
-            while (true) {
-                try (Socket client = server.accept()) {
-                    Runtime.childRun(() -> {
-                        echoClientRequest(client);
-                        System.out.println(Runtime.getForkStatus() +  ": Exiting now");
-                        client.close();
-                        server.close();
-                        Runtime.exit();
-                    });
-                    System.out.println(Runtime.getForkStatus().name() + ": I'm alive");
-                }
-            }
-        }
+        Signal.addHook(Signal.SIGTERM, () -> {
+            System.out.println(Runtime.getForkStatus() + " SIGTERM");
+            Runtime.getChildren().forEach(Process::kill);
+            Runtime.exit();
+        });
+        Signal.addHook(Signal.SIGSTOP, () -> {
+            System.out.println(Runtime.getForkStatus() + " SIGSTOP");
+            Runtime.exit();
+        });
+
+        Server server = new Server(8080);
+        server.registerMapping("/test", request ->
+                new Response(ResponseStatus.OK, "/test", new LinkedHashMap<>(), "HELLO"));
+        server.setDefaultMapping(request ->
+                new Response(ResponseStatus.IM_A_TEAPOT, "/", new LinkedHashMap<>(), "I'm a teapot"));
+        server.run();
     }
 }
