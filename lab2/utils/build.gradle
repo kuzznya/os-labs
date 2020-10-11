@@ -10,8 +10,20 @@ group 'com.github.kuzznya'
 version '1.0-SNAPSHOT'
 
 model {
+    platforms {
+        x86 {
+            if (operatingSystem.macOsX) {
+                architecture "x64"
+            } else {
+                architecture "x86"
+            }
+        }
+    }
+
     components {
         bridge(NativeLibrarySpec) {
+            targetPlatform "x86"
+
             sources {
                 cpp {
                     source {
