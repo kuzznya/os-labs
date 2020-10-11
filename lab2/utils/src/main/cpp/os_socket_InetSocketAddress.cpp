@@ -1,5 +1,6 @@
 #include "os_socket_InetSocketAddress.h"
 
+#include <sys/socket.h>
 #include <netinet/in.h>
 
 JNIEXPORT jbyteArray JNICALL Java_os_socket_InetSocketAddress_getNativeData
