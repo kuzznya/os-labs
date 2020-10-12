@@ -1,6 +1,5 @@
 package os.server;
 
-import os.process.Process;
 import os.process.Runtime;
 import os.process.Signal;
 import os.utils.Loader;
@@ -12,15 +11,8 @@ public class Main {
     public static void main(String[] args) {
         Loader.loadNativeLibrary();
 
-        Signal.addHook(Signal.SIGTERM, () -> {
-            System.out.println(Runtime.getForkStatus() + " SIGTERM");
-            Runtime.getChildren().forEach(Process::kill);
-            Runtime.exit();
-        });
-        Signal.addHook(Signal.SIGSTOP, () -> {
-            System.out.println(Runtime.getForkStatus() + " SIGSTOP");
-            Runtime.exit();
-        });
+        Signal.addHook(Signal.SIGTERM, Runtime::commitSuicide);
+        Signal.addHook(Signal.SIGSTOP, Runtime::commitSuicide);
 
         Server server = new Server(8080);
         server.registerMapping("/test", request ->

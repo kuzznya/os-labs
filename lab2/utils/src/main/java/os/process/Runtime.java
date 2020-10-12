@@ -100,27 +100,35 @@ public class Runtime {
             throw new RuntimeException("Process forking failed");
     }
 
-    public static native void kill(int PID);
-    public static native void kill(int PID, int signal);
-
-    private static native int callFork();
-
-    private static void addShutdownHook(String name, Runnable hook) {
+    public static void addShutdownHook(String name, Runnable hook) {
         shutdownHooks.put(name, hook);
     }
 
-    private static void removeShutdownHook(String name, Runnable hook) {
+    public static void removeShutdownHook(String name, Runnable hook) {
         shutdownHooks.remove(name);
     }
 
     public static void exit() {
-        System.out.println("Exiting now");
+        // FIXME: 12.10.2020 child processes are not exiting
         try {
             shutdownHooks.values().forEach(Runnable::run);
         } finally {
             java.lang.Runtime.getRuntime().halt(0);
         }
     }
+
+    public static void commitSuicide() {
+        try {
+            shutdownHooks.values().forEach(Runnable::run);
+        } finally {
+            Signal.raise(Signal.SIGKILL);
+        }
+    }
+
+    public static native void kill(int PID);
+    public static native void kill(int PID, int signal);
+
+    private static native int callFork();
 
     public enum ForkStatus {
         PARENT,

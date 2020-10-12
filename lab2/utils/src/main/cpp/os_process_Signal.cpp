@@ -1,7 +1,6 @@
 #include "os_process_Signal.h"
 
 #include <csignal>
-#include <iostream>
 
 JNIEXPORT jint JNICALL Java_os_process_Signal_getNativeValue
         (JNIEnv* env, jclass c, jint idx) {
@@ -15,24 +14,26 @@ JNIEXPORT jint JNICALL Java_os_process_Signal_getNativeValue
         case 3:
             return SIGABRT;
         case 4:
-            return SIGPIPE;
+            return SIGKILL;
         case 5:
-            return SIGTERM;
+            return SIGPIPE;
         case 6:
-            return SIGSTOP;
+            return SIGTERM;
         case 7:
-            SIGTSTP;
+            return SIGSTOP;
         case 8:
-            return SIGCONT;
+            SIGTSTP;
         case 9:
-            return SIGCHLD;
+            return SIGCONT;
         case 10:
-            return SIGIO;
+            return SIGCHLD;
         case 11:
-            return SIGINFO;
+            return SIGIO;
         case 12:
-            return SIGUSR1;
+            return SIGINFO;
         case 13:
+            return SIGUSR1;
+        case 14:
             return SIGUSR2;
         default:
             return 0;
@@ -47,11 +48,12 @@ JNIEXPORT void JNICALL Java_os_process_Signal_bindSignalHandler
         (JNIEnv* env, jclass c, jint signum) {
     env->GetJavaVM(&vm);
 
-    std::signal(signum, [](int signum) -> void {
-        std::cout.flush();
+    signal(signum, [](int signum) -> void {
         if (vm != nullptr) {
             JNIEnv* env;
-            vm->AttachCurrentThread(reinterpret_cast<void **>(&env), nullptr);
+            int result = vm->AttachCurrentThread(reinterpret_cast<void **>(&env), nullptr);
+            if (result != 0)
+                return;
 
             jclass cls = env->FindClass("os/process/Signal");
             jmethodID method = env->GetStaticMethodID(cls, "handle", "(I)V");
@@ -60,6 +62,11 @@ JNIEXPORT void JNICALL Java_os_process_Signal_bindSignalHandler
             vm->DetachCurrentThread();
         }
     });
+}
+
+JNIEXPORT void JNICALL Java_os_process_Signal_resetSignalHandler
+        (JNIEnv*, jclass, jint signum) {
+    signal(signum, SIG_DFL);
 }
 
 JNIEXPORT void JNICALL Java_os_process_Signal_ignore

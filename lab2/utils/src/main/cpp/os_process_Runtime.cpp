@@ -16,6 +16,8 @@ JNIEXPORT void JNICALL Java_os_process_Runtime_kill__II
 
 JNIEXPORT jint JNICALL Java_os_process_Runtime_callFork
         (JNIEnv *, jclass) {
-    signal(SIGCHLD, SIG_IGN);
-    return fork();
+    int result = fork();
+    if (result > 0)
+        signal(SIGCHLD, SIG_IGN);
+    return result;
 }

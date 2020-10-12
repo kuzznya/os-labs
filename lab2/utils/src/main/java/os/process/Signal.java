@@ -10,16 +10,17 @@ public enum Signal {
     SIGINT(getNativeValue(1)),
     SIGQUIT(getNativeValue(2)),
     SIGABRT(getNativeValue(3)),
-    SIGPIPE(getNativeValue(4)),
-    SIGTERM(getNativeValue(5)),
-    SIGSTOP(getNativeValue(6)),
-    SIGTSTP(getNativeValue(7)),
-    SIGCONT(getNativeValue(8)),
-    SIGCHLD(getNativeValue(9)),
-    SIGIO(getNativeValue(10)),
-    SIGINFO(getNativeValue(11)),
-    SIGUSR1(getNativeValue(12)),
-    SIGUSR2(getNativeValue(13));
+    SIGKILL(getNativeValue(4)),
+    SIGPIPE(getNativeValue(5)),
+    SIGTERM(getNativeValue(6)),
+    SIGSTOP(getNativeValue(7)),
+    SIGTSTP(getNativeValue(8)),
+    SIGCONT(getNativeValue(9)),
+    SIGCHLD(getNativeValue(10)),
+    SIGIO(getNativeValue(11)),
+    SIGINFO(getNativeValue(12)),
+    SIGUSR1(getNativeValue(13)),
+    SIGUSR2(getNativeValue(14));
 
     private static final Map<Signal, Runnable> hooks = new LinkedHashMap<>();
 
@@ -36,6 +37,7 @@ public enum Signal {
 
     public static void removeHook(Signal signal) {
         hooks.remove(signal);
+        resetSignalHandler(signal.nativeValue);
     }
 
     private static Signal fromNativeValue(int signum) {
@@ -47,6 +49,8 @@ public enum Signal {
             return SIGQUIT;
         if (signum == SIGABRT.nativeValue)
             return SIGABRT;
+        if (signum == SIGKILL.nativeValue)
+            return SIGKILL;
         if (signum == SIGPIPE.nativeValue)
             return SIGPIPE;
         if (signum == SIGTERM.nativeValue)
@@ -90,6 +94,7 @@ public enum Signal {
     private static native void ignore(int signum);
     private static native void raise(int signum);
     private static native void bindSignalHandler(int signum);
+    private static native void resetSignalHandler(int signum);
 
     static {
         Loader.loadNativeLibrary();

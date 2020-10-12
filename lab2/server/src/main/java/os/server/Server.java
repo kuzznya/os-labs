@@ -48,6 +48,7 @@ public class Server {
                                     ex != null ? ex.getMessage() : ""
                             ).toString().getBytes(StandardCharsets.UTF_8)
                     );
+            client.getOutputStream().flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,7 +103,7 @@ public class Server {
                         handleRequest(client);
                         client.close();
                         server.close();
-                        Runtime.exit();
+                        Runtime.commitSuicide();
                     });
                 }
             }
