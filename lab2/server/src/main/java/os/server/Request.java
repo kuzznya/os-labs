@@ -78,4 +78,27 @@ public class Request {
         else
             return new Request(method, path, headers, bodyBuilder.toString());
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append(method.name()).append(' ')
+                .append(path).append(' ')
+                .append("HTTP/1.1\r\n").append(
+                headers
+                        .entrySet()
+                        .stream()
+                        .collect(StringBuffer::new,
+                                (stringBuffer, entry) ->
+                                        stringBuffer
+                                                .append(entry.getKey())
+                                                .append(": ")
+                                                .append(entry.getValue())
+                                                .append("\r\n"),
+                                StringBuffer::append
+                        ).toString())
+                .append("\r\n")
+                .append(body)
+                .toString();
+    }
 }

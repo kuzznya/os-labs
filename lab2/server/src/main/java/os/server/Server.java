@@ -40,7 +40,6 @@ public class Server {
                     .write(
                             new Response(
                                     status,
-                                    "/",
                                     new LinkedHashMap<>(),
                                     ex != null ? ex.getMessage() : ""
                             ).toString().getBytes(StandardCharsets.UTF_8)
@@ -89,7 +88,7 @@ public class Server {
                 client.getOutputStream()
                         .write(response.toString().getBytes(StandardCharsets.UTF_8));
             else
-                handleError(client, null, ResponseStatus.NOT_FOUND);
+                handleError(client, new RuntimeException("NOT FOUND"), ResponseStatus.NOT_FOUND);
 
         } catch (Exception ignored) { }
     }

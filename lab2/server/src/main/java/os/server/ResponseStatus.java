@@ -1,5 +1,7 @@
 package os.server;
 
+import java.util.Objects;
+
 public class ResponseStatus {
 
     private final int code;
@@ -21,6 +23,20 @@ public class ResponseStatus {
     @Override
     public String toString() {
         return code + " " + description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResponseStatus status = (ResponseStatus) o;
+        return code == status.code &&
+                Objects.equals(description, status.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code, description);
     }
 
     public static final ResponseStatus OK = new ResponseStatus(200, "OK");

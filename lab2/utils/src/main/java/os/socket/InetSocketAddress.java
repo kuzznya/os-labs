@@ -11,15 +11,13 @@ public class InetSocketAddress extends SocketAddress {
 
     private final int ip;
 
+    public static final int INADDR_ANY = getInaddrAny();
+    public static final int INADDR_LOOPBACK = getInaddrLoopback();
+
     public InetSocketAddress(short port, int ip) {
         super(Domain.AF_INET, createData(port, ip));
         this.port = port;
         this.ip = ip;
-    }
-
-    // NOTE INADDR_ANY is set to 0 BUT this should be checked in netinet/in.h
-    public InetSocketAddress(short port) {
-        this(port, 0);
     }
 
     public short getPort() {
@@ -39,6 +37,8 @@ public class InetSocketAddress extends SocketAddress {
     }
 
     private static native byte[] getNativeData(short port, int ip);
+    private static native int getInaddrAny();
+    private static native int getInaddrLoopback();
 
     static {
         Loader.loadNativeLibrary();

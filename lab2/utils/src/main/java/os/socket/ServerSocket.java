@@ -12,7 +12,7 @@ public class ServerSocket extends Socket {
 
     public ServerSocket(short port) {
         super(Domain.AF_INET, SocketType.SOCK_STREAM);
-        bind(new InetSocketAddress(port));
+        bind(new InetSocketAddress(port, InetSocketAddress.INADDR_ANY));
     }
 
     public void listen() {

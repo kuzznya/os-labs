@@ -11,3 +11,13 @@ JNIEXPORT jbyteArray JNICALL Java_os_socket_InetSocketAddress_getNativeData
     env->SetByteArrayRegion(result, 0, 14, reinterpret_cast<jbyte*>(&address + 2));
     return result;
 }
+
+JNIEXPORT jint JNICALL Java_os_socket_InetSocketAddress_getInaddrAny
+        (JNIEnv *, jclass) {
+    return INADDR_ANY;
+}
+
+JNIEXPORT jint JNICALL Java_os_socket_InetSocketAddress_getInaddrLoopback
+        (JNIEnv *, jclass) {
+    return INADDR_LOOPBACK;
+}
