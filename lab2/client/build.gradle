@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'com.github.kuzznya'
+version '0.0.1-SNAPSHOT'
+
+mainClassName = 'os.client.Main'
+
+dependencies {
+    implementation project(':utils')
+    implementation project(':server')
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': mainClassName
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

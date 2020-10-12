@@ -2,3 +2,5 @@ rootProject.name = 'lab2'
 
 include 'utils'
 include 'server'
+include 'client'
+
