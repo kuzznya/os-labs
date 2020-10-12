@@ -5,7 +5,6 @@ import os.socket.ServerSocket;
 import os.socket.Socket;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -18,7 +17,7 @@ public class Server {
 
     private final ServerSocket server;
 
-    private Map<String, Function<Request, Response>> mappings = new LinkedHashMap<>();
+    private final Map<String, Function<Request, Response>> mappings = new LinkedHashMap<>();
 
     Function<Request, Response> defaultMapping = null;
 
@@ -36,8 +35,6 @@ public class Server {
     }
 
     private void handleError(Socket client, Exception ex, ResponseStatus status) {
-        if (ex != null)
-            ex.printStackTrace();
         try {
             client.getOutputStream()
                     .write(
@@ -49,9 +46,7 @@ public class Server {
                             ).toString().getBytes(StandardCharsets.UTF_8)
                     );
             client.getOutputStream().flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) { }
     }
 
     private void handleRequest(Socket client) {
@@ -79,8 +74,14 @@ public class Server {
                     )
                     .findFirst();
 
-            if (mappingKey.isPresent())
-                response = mappings.get(mappingKey.get()).apply(request);
+            if (mappingKey.isPresent()) {
+                try {
+                    response = mappings.get(mappingKey.get()).apply(request);
+                } catch (Exception ex) {
+                    handleError(client, ex, ResponseStatus.INTERNAL_ERROR);
+                    throw ex;
+                }
+            }
             else if (defaultMapping != null)
                 response = defaultMapping.apply(request);
 
@@ -90,9 +91,7 @@ public class Server {
             else
                 handleError(client, null, ResponseStatus.NOT_FOUND);
 
-        } catch (Exception ex) {
-            handleError(client, ex, ResponseStatus.INTERNAL_ERROR);
-        }
+        } catch (Exception ignored) { }
     }
 
     public void run() {

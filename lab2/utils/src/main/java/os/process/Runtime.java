@@ -39,7 +39,6 @@ public class Runtime {
     }
 
     public static void fork() {
-        System.out.println("FORK");
         int result = callFork();
         if (result == 0) {
             forkStatus = ForkStatus.CHILD;

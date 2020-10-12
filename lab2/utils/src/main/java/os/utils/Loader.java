@@ -6,6 +6,8 @@ import java.io.IOException;
 
 public class Loader {
 
+    private static boolean nativeLibLoaded = false;
+
     private Loader() {}
 
     private static OperatingSystem detectOS() {
@@ -46,10 +48,13 @@ public class Loader {
     }
 
     public static void loadNativeLibrary() {
+        if (nativeLibLoaded)
+            return;
         try {
             System.loadLibrary("bridge");
         } catch (UnsatisfiedLinkError e) {
             loadLibraryFromJar();
         }
+        nativeLibLoaded = true;
     }
 }
