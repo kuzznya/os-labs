@@ -12,12 +12,11 @@ public class Loader {
 
     private static OperatingSystem detectOS() {
         String name = System.getProperty("os.name").toLowerCase();
-
         if (name.contains("win"))
             return OperatingSystem.WINDOWS;
         if (name.contains("mac"))
             return OperatingSystem.MAC;
-        if (name.contains("nix") || name.contains("bsd"))
+        if (name.contains("nix") || name.contains("bsd")  || name.contains("nux"))
             return OperatingSystem.UNIX;
         return OperatingSystem.UNSPECIFIED;
     }

@@ -30,7 +30,7 @@ JNIEXPORT jint JNICALL Java_os_process_Signal_getNativeValue
         case 11:
             return SIGIO;
         case 12:
-            return SIGINFO;
+            return SIGIO;
         case 13:
             return SIGUSR1;
         case 14:
