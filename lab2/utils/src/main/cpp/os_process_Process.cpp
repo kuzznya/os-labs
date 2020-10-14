@@ -21,6 +21,7 @@ JNIEXPORT jint JNICALL Java_os_process_Process_run
        name = strtok(wholeLine, " ");
        char * arguement = strtok(NULL, " ");
        std::cout<<name<<" "<<arguement<<std::endl;
+       arguements.push_back(name);
        while(arguement!=NULL){
        arguements.push_back(arguement);
        arguement = strtok(NULL, " ");
