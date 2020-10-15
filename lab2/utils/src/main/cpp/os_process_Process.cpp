@@ -14,19 +14,41 @@
 
 JNIEXPORT jint JNICALL Java_os_process_Process_run
   (JNIEnv * env, jclass c, jbyteArray byteArray){
+  std::cout<<"run"<<std::endl;
        char * wholeLine = new char[10];
        char * name = new char[10];
        std::vector <char*> arguements;
        wholeLine = as_unsigned_char_array(env, byteArray);
        name = strtok(wholeLine, " ");
        char * arguement = strtok(NULL, " ");
-       std::cout<<name<<" "<<arguement<<std::endl;
+       //std::cout<<name<<" "<<arguement<<std::endl;
        arguements.push_back(name);
        while(arguement!=NULL){
        arguements.push_back(arguement);
        arguement = strtok(NULL, " ");
        }
        //arguements = strtok(NULL, " ");
-       std::cout<<arguements[0]<<std::endl;
+      // std::cout<<arguements[0]<<std::endl;
        return execv((const char *)name, (char * const *)&arguements[0]);
   }
+
+  /*JNIEXPORT jint JNICALL Java_os_process_Process_runOnBackground
+    (JNIEnv * env, jclass c, jbyteArray byteArray){
+    char * wholeLine = new char[10];
+           char * name = new char[10];
+           std::vector <char*> arguements;
+           wholeLine = as_unsigned_char_array(env, byteArray);
+           name = strtok(wholeLine, " ");
+           char * arguement = strtok(NULL, " ");
+           std::cout<<name<<" "<<arguement<<std::endl;
+           arguements.push_back(name);
+           while(arguement!=NULL){
+           arguements.push_back(arguement);
+           arguement = strtok(NULL, " ");
+           }
+           //arguements.push_back("&");
+           arguements.push_back(NULL);
+           //arguements = strtok(NULL, " ");
+           std::cout<<arguements[0]<<std::endl;
+           return execv((const char *)name, (char * const *)&arguements[0]);
+    }*/

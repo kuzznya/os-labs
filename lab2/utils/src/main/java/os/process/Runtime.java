@@ -73,6 +73,7 @@ public class Runtime {
     }
 
     public static void forkWithPipes() {
+        System.out.println("fork");
         UnnamedPipe childReadPipe = new UnnamedPipe();
         UnnamedPipe childWritePipe = new UnnamedPipe();
 

@@ -41,5 +41,15 @@ public class Process {
     public static int run(String name){
         return run(name.getBytes());
     }
+
     private static native int run(byte[] name);
+
+    public static int runOnBackground(String name){
+        System.out.println("backgound");
+        Runtime.forkWithPipes();
+        System.out.println(Runtime.getChildren().size());
+        return Runtime.getChildren().get(Runtime.getChildren().size()-1).run(name);
+    }
+
+    private static native int runOnBackground(byte[] name);
 }
