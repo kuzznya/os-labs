@@ -3,6 +3,7 @@ package os.process;
 import os.process.pipe.ReadPipe;
 import os.process.pipe.WritePipe;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class Process {
@@ -12,7 +13,12 @@ public class Process {
     private ReadPipe readPipe = null;
     private WritePipe writePipe = null;
 
-    
+private enum Status{
+    Running,
+    Sleeping,
+    Stopped,
+    Zombie;
+}
 
     public Process(int PID) {
         this.PID = PID;
@@ -56,6 +62,8 @@ public class Process {
             return -1;
         }
     }
-
-    private static native int runOnBackground(byte[] name);
+    public static String getUser(){
+        return new String(user(), StandardCharsets.UTF_8);
+    }
+    private static native byte[] user();
 }

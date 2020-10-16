@@ -27,7 +27,7 @@ public class Main {
         });
         System.out.println(Runtime.getChildren().get(0).getPID() + " is daemon");
         System.out.println("I'm leaving you with the daemon");
-        Runtime.getChildren().get(0).runOnBackground("/bin/grep -R 123 /etc");
+        System.out.println(Runtime.getChildren().get(0).getUser());
         Runtime.commitSuicide();
     }
 }
