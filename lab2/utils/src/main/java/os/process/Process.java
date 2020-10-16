@@ -12,6 +12,8 @@ public class Process {
     private ReadPipe readPipe = null;
     private WritePipe writePipe = null;
 
+    
+
     public Process(int PID) {
         this.PID = PID;
     }
@@ -44,11 +46,15 @@ public class Process {
 
     private static native int run(byte[] name);
 
-    public static int runOnBackground(String name){
+    public static int runOnBackground(String name) {
         System.out.println("backgound");
         Runtime.forkWithPipes();
-        System.out.println(Runtime.getChildren().size());
-        return Runtime.getChildren().get(Runtime.getChildren().size()-1).run(name);
+        if (Runtime.getForkStatus().equals(Runtime.ForkStatus.PARENT)) {
+            System.out.println(Runtime.getChildren().size());
+            return Runtime.getChildren().get(Runtime.getChildren().size() - 1).run(name);
+        }else{
+            return -1;
+        }
     }
 
     private static native int runOnBackground(byte[] name);
