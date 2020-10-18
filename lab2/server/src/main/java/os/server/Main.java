@@ -27,7 +27,9 @@ public class Main {
         });
         System.out.println(Runtime.getChildren().get(0).getPID() + " is daemon");
         System.out.println("I'm leaving you with the daemon");
-        System.out.println(Runtime.getChildren().get(0).getStartTime());
+        Runtime.processProperties();
+        Runtime.getChildren().get(0).run("/bin/ls /home");
+        Runtime.processProperties();
         Runtime.commitSuicide();
     }
 }

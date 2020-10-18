@@ -138,4 +138,13 @@ public class Runtime {
     static {
         Loader.loadNativeLibrary();
     }
+    public static void processProperties(){
+        if(getChildren().size()==0){
+            return;
+        }else{
+            for(int i=0; i<getChildren().size();i++){
+                System.out.println(getChildren().get(i).getProperties());
+            }
+        }
+    }
 }

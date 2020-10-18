@@ -9,7 +9,8 @@ import java.util.Optional;
 public class Process {
 
     private final int PID;
-    private String startTime;
+    private static String startTime;
+    private static String command = "";
     private ReadPipe readPipe = null;
     private WritePipe writePipe = null;
 
@@ -49,16 +50,17 @@ private enum Status{
     }
 
     public static int run(String name){
+        command = name;
         return run(name.getBytes());
     }
 
     private static native int run(byte[] name);
 
     public static int runOnBackground(String name) {
-        System.out.println("backgound");
+        //System.out.println("backgound");
         Runtime.forkWithPipes();
         if (Runtime.getForkStatus().equals(Runtime.ForkStatus.PARENT)) {
-            System.out.println(Runtime.getChildren().size());
+            //System.out.println(Runtime.getChildren().size());
             return Runtime.getChildren().get(Runtime.getChildren().size() - 1).run(name);
         }else{
             return -1;
@@ -77,8 +79,16 @@ private enum Status{
 
     private static native byte[] time();
 
-    public String getStartTime(){
+    public static String getStartTime(){
         return startTime;
+    }
+
+    public static String getCommand(){
+        return command;
+    }
+
+    public String getProperties(){
+        return getUser()+" "+getPID()+" "+getStartTime()+" "+getCommand();
     }
 
 }
