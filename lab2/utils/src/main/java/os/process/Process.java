@@ -9,7 +9,7 @@ import java.util.Optional;
 public class Process {
 
     private final int PID;
-
+    private String startTime;
     private ReadPipe readPipe = null;
     private WritePipe writePipe = null;
 
@@ -22,12 +22,14 @@ private enum Status{
 
     public Process(int PID) {
         this.PID = PID;
+        this.startTime = getTime();
     }
 
     public Process(int PID, ReadPipe readPipe, WritePipe writePipe) {
         this.PID = PID;
         this.readPipe = readPipe;
         this.writePipe = writePipe;
+        this.startTime = getTime();
     }
 
     public int getPID() {
@@ -62,8 +64,21 @@ private enum Status{
             return -1;
         }
     }
+
     public static String getUser(){
         return new String(user(), StandardCharsets.UTF_8);
     }
+
     private static native byte[] user();
+
+    private static String getTime(){
+        return new String(time(), StandardCharsets.UTF_8);
+    }
+
+    private static native byte[] time();
+
+    public String getStartTime(){
+        return startTime;
+    }
+
 }

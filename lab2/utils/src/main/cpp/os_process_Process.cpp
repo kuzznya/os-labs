@@ -5,7 +5,23 @@
 #include <pwd.h>
 #include <vector>
 #include <iostream>
+#include <time.h>
 
+char *datetime()
+{
+   //char* array = new char[100];
+   time_t rawtime;
+   time (&rawtime);
+   struct tm  *timeinfo = localtime (&rawtime);
+   //strftime(array, sizeof(array)-1, "%d.%m.%y._%H:%M:%S", timeinfo);
+   // time_t result;
+   // result = time(NULL);
+   // sprintf(array, "%s", asctime(localtime(&result)));
+   // array[100] = '\0';
+    //std::cout<<array<<std::endl;
+   // std::cout<<asctime(timeinfo)<<std::endl;
+    return asctime(timeinfo);
+}
  char* as_unsigned_char_array(JNIEnv * env, jbyteArray array) {
     int len = env->GetArrayLength (array);
     char* buf = new char[len];
@@ -48,3 +64,8 @@ JNIEXPORT jint JNICALL Java_os_process_Process_run
     jbyteArray result = as_byte_array(env, username, strlen(username));
     return result;
     }
+    JNIEXPORT jbyteArray JNICALL Java_os_process_Process_time
+      (JNIEnv * env, jclass c){
+      //std::cout<<datetime()<<std::endl;
+      return as_byte_array(env, datetime(), strlen(datetime()));
+      }
