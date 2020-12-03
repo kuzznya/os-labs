@@ -30,6 +30,10 @@ public enum Signal {
         this.nativeValue = nativeValue;
     }
 
+    public int getNativeValue() {
+        return nativeValue;
+    }
+
     public static void addHook(Signal signal, Runnable runnable) {
         hooks.put(signal, runnable);
         bindSignalHandler(signal.nativeValue);
@@ -76,6 +80,7 @@ public enum Signal {
 
     public static void handle(int signum) {
         Signal signal = fromNativeValue(signum);
+        System.out.println(signal + " RECEIVED BY " + Runtime.getCurrentProcess().getPID());
         if (signal == null)
             return;
         if (hooks.containsKey(signal))
