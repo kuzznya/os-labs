@@ -3,8 +3,9 @@ package os.diskimg.fat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import os.diskimg.util.Alignable;
 
-public class BootSector {
+public class BootSector implements Alignable {
 
     private final byte[] BS_jmpBoot = {(byte) 0xEB, (byte) 0x3C, (byte) 0x90};
 
@@ -97,6 +98,11 @@ public class BootSector {
 
     private final byte[] END_OF_SECTOR = {0x55, (byte) 0xAA};
 
+    @Override
+    public int alignment() {
+        return 512;
+    }
+
 
     public interface BPBPart { }
 
@@ -173,7 +179,7 @@ public class BootSector {
                 sector.setBPB_RootEntCount((short) 0);
                 sector.setBPB_TotSec16((short) 0);
                 sector.setBPB_FATSz16((short) 0);
-                sector.setBPB_TotSec32((int) (driveSize / sector.BPB_BytsPerSec));
+                sector.setBPB_TotSec32(driveSize / sector.BPB_BytsPerSec);
 
                 BPBPartFat32 part = new BPBPartFat32();
                 part.setBPB_FATSz32(sector.BPB_TotSec32 / sector.BPB_NumFATs);

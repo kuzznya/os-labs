@@ -45,7 +45,10 @@ public class ObjectMarshaller {
 
         Field[] fields = type.getDeclaredFields();
 
-//        ArrayList<Byte> data = new ArrayList<>();
+        int alignment = 0;
+        if (obj instanceof Alignable)
+            alignment = ((Alignable) obj).alignment();
+
         ByteArrayOutputStream data = new ByteArrayOutputStream();
 
         for (Field field : fields) {
@@ -57,6 +60,8 @@ public class ObjectMarshaller {
                 data.write(marshall(fieldValue));
             } catch (Exception ignored) {}
         }
+        while (data.size() < alignment)
+            data.write(0);
         return data.toByteArray();
     }
 
