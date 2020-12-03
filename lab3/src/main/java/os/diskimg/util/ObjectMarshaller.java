@@ -18,10 +18,10 @@ public class ObjectMarshaller {
     }
 
     @SuppressWarnings("unchecked")
-    public byte[] marshall(Object obj) {
+    public byte[] marshall(Object obj, boolean ignoreCustomMarshalling) {
         Class<?> type = obj.getClass();
 
-        if (obj instanceof Marshallable)
+        if (obj instanceof Marshallable && !ignoreCustomMarshalling)
             return ((Marshallable) obj).marshall();
 
         if (type.isArray())
@@ -68,6 +68,10 @@ public class ObjectMarshaller {
         while (data.size() < alignment)
             data.write(0);
         return data.toByteArray();
+    }
+
+    public byte[] marshall(Object obj) {
+        return marshall(obj, false);
     }
 
     private byte[] marshallArray(Object obj) {
