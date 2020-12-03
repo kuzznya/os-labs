@@ -6,9 +6,11 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ObjectMarshaller {
 
+    @SuppressWarnings("unchecked")
     public byte[] marshall(Object obj) {
         Class<?> type = obj.getClass();
 
@@ -27,6 +29,9 @@ public class ObjectMarshaller {
             return marshallChar((Character) obj);
         if (obj instanceof String)
             return marshallString((String) obj);
+
+        if (obj instanceof List)
+            return marshallList((List<Object>) obj);
 
         Field[] fields = type.getFields();
 
@@ -122,5 +127,19 @@ public class ObjectMarshaller {
         } catch (CharacterCodingException ex) {
             throw new RuntimeException("Cannot encode char to UTF-8", ex);
         }
+    }
+
+    private byte[] marshallList(List<Object> values) {
+        ArrayList<Byte> data = new ArrayList<>();
+        for (Object value : values) {
+            byte[] elemBytes = marshall(value);
+            for (byte b : elemBytes)
+                data.add(b);
+        }
+
+        byte[] result = new byte[data.size()];
+        for (int i = 0; i < result.length; i++)
+            result[i] = data.get(i);
+        return result;
     }
 }

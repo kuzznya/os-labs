@@ -2,6 +2,9 @@ package os.diskimg;
 
 import os.diskimg.util.ObjectMarshaller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Program {
 
     public static void main(String[] args) {
@@ -25,5 +28,6 @@ public class Program {
     public static class Internal {
         public String someTest = "Internal";
         public byte[] data = {'t', 'e', 's', 't'};
+        public ArrayList<String> strings = new ArrayList<>(List.of("test1", "test2", "test3"));
     }
 }
