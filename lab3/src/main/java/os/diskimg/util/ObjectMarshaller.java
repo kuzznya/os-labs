@@ -54,9 +54,14 @@ public class ObjectMarshaller {
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
+
+                if (field.getAnnotation(IgnoreField.class) != null)
+                    continue;
+
                 Object fieldValue = field.get(obj);
                 if (fieldValue == null)
                     continue;
+
                 data.write(marshall(fieldValue));
             } catch (Exception ignored) {}
         }
