@@ -3,11 +3,10 @@ package os.diskimg.fat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import os.diskimg.util.*;
+import os.diskimg.util.AlignmentTo;
+import os.diskimg.util.IgnoreField;
 
-import java.io.ByteArrayOutputStream;
-
-public class BootSector implements Alignable, Marshallable {
+public class BootSector {
 
     private final byte[] BS_jmpBoot = {(byte) 0xEB, (byte) 0x3C, (byte) 0x90};
 
@@ -98,25 +97,9 @@ public class BootSector implements Alignable, Marshallable {
             0x0A
     };
 
-    @IgnoreField
+    private final AlignmentTo alignment = new AlignmentTo(510);
+
     private final byte[] END_OF_SECTOR = {0x55, (byte) 0xAA};
-
-    @Override
-    public int alignment() {
-        return 510;
-    }
-
-    @Override
-    public byte[] marshall() {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try {
-            data.write(new ObjectMarshaller(Endianness.LITTLE_ENDIAN).marshall(this, true));
-            data.write(END_OF_SECTOR);
-            return data.toByteArray();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 
 
     public interface BPBPart { }

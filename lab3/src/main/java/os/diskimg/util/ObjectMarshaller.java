@@ -61,6 +61,11 @@ public class ObjectMarshaller {
                 Object fieldValue = field.get(obj);
                 if (fieldValue == null)
                     continue;
+                if (fieldValue instanceof AlignmentTo) {
+                    while (data.size() < ((AlignmentTo) fieldValue).getSize())
+                        data.write(0);
+                    continue;
+                }
 
                 data.write(marshall(fieldValue));
             } catch (Exception ignored) {}
