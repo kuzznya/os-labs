@@ -147,7 +147,7 @@ public class BootSector implements Alignable {
         private final short BPB_BkBootSec = 6;
 
         // reserved, len: 12
-        private final byte[] BPB_Reserved = new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        private final byte[] BPB_Reserved = new byte[12];
 
         private final byte BS_DrvNum = (byte) 0x80;
 
