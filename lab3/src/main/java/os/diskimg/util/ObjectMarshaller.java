@@ -1,14 +1,21 @@
 package os.diskimg.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectMarshaller {
+
+    private final Endianness endianness;
+
+    public ObjectMarshaller(Endianness endianness) {
+        this.endianness = endianness;
+    }
 
     @SuppressWarnings("unchecked")
     public byte[] marshall(Object obj) {
@@ -38,7 +45,8 @@ public class ObjectMarshaller {
 
         Field[] fields = type.getDeclaredFields();
 
-        ArrayList<Byte> data = new ArrayList<>();
+//        ArrayList<Byte> data = new ArrayList<>();
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
 
         for (Field field : fields) {
             try {
@@ -46,35 +54,24 @@ public class ObjectMarshaller {
                 Object fieldValue = field.get(obj);
                 if (fieldValue == null)
                     continue;
-                byte[] elemBytes = marshall(fieldValue);
-                for (byte val : elemBytes)
-                    data.add(val);
+                data.write(marshall(fieldValue));
             } catch (Exception ignored) {}
         }
-
-        byte[] result = new byte[data.size()];
-        for (int i = 0; i < result.length; i++)
-            result[i] = data.get(i);
-        return result;
+        return data.toByteArray();
     }
 
     private byte[] marshallArray(Object obj) {
         if (!obj.getClass().isArray())
             throw new IllegalArgumentException("Object is not an array");
 
-        ArrayList<Byte> data = new ArrayList<>();
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
         try {
             int i = 0;
-            while (true) {
-                byte[] elemBytes = marshall(Array.get(obj, i++));
-                for (byte val : elemBytes)
-                    data.add(val);
-            }
+            while (true)
+                data.write(marshall(Array.get(obj, i++)));
+
         } catch (Exception ex) {
-            byte[] result = new byte[data.size()];
-            for (int i = 0; i < result.length; i++)
-                result[i] = data.get(i);
-            return result;
+            return data.toByteArray();
         }
     }
 
@@ -83,21 +80,29 @@ public class ObjectMarshaller {
     }
 
     private byte[] marshallShort(short value) {
-        return new byte[] {
+        byte[] data = new byte[] {
                 (byte) (value >> 8),
                 (byte) (value)};
+        if (endianness == Endianness.LITTLE_ENDIAN)
+            return reverse(data);
+        else
+            return data;
     }
 
     private byte[] marshallInt(int value) {
-        return new byte[] {
+        byte[] data = new byte[] {
                 (byte) (value >> 24),
                 (byte) (value >> 16),
                 (byte) (value >> 8),
                 (byte) (value)};
+        if (endianness == Endianness.LITTLE_ENDIAN)
+            return reverse(data);
+        else
+            return data;
     }
 
     private byte[] marshallLong(long value) {
-        return new byte[] {
+        byte[] data = new byte[] {
                 (byte) (value >> 56),
                 (byte) (value >> 48),
                 (byte) (value >> 40),
@@ -106,16 +111,22 @@ public class ObjectMarshaller {
                 (byte) (value >> 16),
                 (byte) (value >> 8),
                 (byte) (value)};
+        if (endianness == Endianness.LITTLE_ENDIAN)
+            return reverse(data);
+        else
+            return data;
     }
 
     private byte[] marshallChar(char value) {
-//        if (StandardCharsets.US_ASCII.newEncoder().canEncode(value))
-//            return new byte[] {(byte) value};
         try {
-            return StandardCharsets.UTF_8
+            byte[] data = StandardCharsets.US_ASCII
                     .newEncoder()
                     .encode(CharBuffer.wrap(new char[]{value}))
                     .array();
+            if (endianness == Endianness.LITTLE_ENDIAN)
+                return reverse(data);
+            else
+                return data;
         } catch (CharacterCodingException ex) {
             throw new RuntimeException("Cannot encode char to UTF-8", ex);
         }
@@ -123,7 +134,7 @@ public class ObjectMarshaller {
 
     private byte[] marshallString(String value) {
         try {
-            return StandardCharsets.UTF_8
+            return StandardCharsets.US_ASCII
                     .newEncoder()
                     .encode(CharBuffer.wrap(value))
                     .array();
@@ -133,16 +144,20 @@ public class ObjectMarshaller {
     }
 
     private byte[] marshallList(List<Object> values) {
-        ArrayList<Byte> data = new ArrayList<>();
-        for (Object value : values) {
-            byte[] elemBytes = marshall(value);
-            for (byte b : elemBytes)
-                data.add(b);
+        try {
+            ByteArrayOutputStream data = new ByteArrayOutputStream();
+            for (Object value : values)
+                data.write(marshall(value));
+            return data.toByteArray();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
+    }
 
-        byte[] result = new byte[data.size()];
+    private byte[] reverse(byte[] data) {
+        byte[] result = new byte[data.length];
         for (int i = 0; i < result.length; i++)
-            result[i] = data.get(i);
+            result[i] = data[data.length - i - 1];
         return result;
     }
 }

@@ -1,5 +1,8 @@
 package os.diskimg;
 
+import os.diskimg.fat.BootSector;
+import os.diskimg.fat.FatType;
+import os.diskimg.util.Endianness;
 import os.diskimg.util.ObjectMarshaller;
 
 import java.util.ArrayList;
@@ -8,13 +11,18 @@ import java.util.List;
 public class Program {
 
     public static void main(String[] args) {
-        ObjectMarshaller marshaller = new ObjectMarshaller();
+        ObjectMarshaller marshaller = new ObjectMarshaller(Endianness.LITTLE_ENDIAN);
 
-        byte[] result = marshaller.marshall(new ImgStruct());
+        BootSector bootSector = BootSector.create(FatType.FAT32, 2048);
 
+        byte[] result = marshaller.marshall(bootSector);
+
+        int idx = 0;
         for (byte value : result) {
+            System.out.print(idx++ + ": ");
             System.out.print((char) value);
-            System.out.println("\t (" + value + ")");
+            String hex = Integer.toHexString(Byte.toUnsignedInt(value));
+            System.out.println("\t (0x" + hex.substring(hex.length() > 1 ? hex.length() - 2 : 0) + ")");
         }
     }
 
