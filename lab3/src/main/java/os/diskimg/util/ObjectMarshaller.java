@@ -14,6 +14,9 @@ public class ObjectMarshaller {
     public byte[] marshall(Object obj) {
         Class<?> type = obj.getClass();
 
+        if (obj instanceof Marshallable)
+            return ((Marshallable) obj).marshall();
+
         if (type.isArray())
             return marshallArray(obj);
 
