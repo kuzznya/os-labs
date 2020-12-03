@@ -37,4 +37,9 @@ public class Process {
     public void kill() {
         Runtime.kill(PID);
     }
+
+    public static int run(String name){
+        return run(name.getBytes());
+    }
+    private static native int run(byte[] name);
 }
