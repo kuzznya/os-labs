@@ -22,7 +22,7 @@ JNIEXPORT jint JNICALL Java_os_process_Signal_getNativeValue
         case 7:
             return SIGSTOP;
         case 8:
-            SIGTSTP;
+            return SIGTSTP;
         case 9:
             return SIGCONT;
         case 10:

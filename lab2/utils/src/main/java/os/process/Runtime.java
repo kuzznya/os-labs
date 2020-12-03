@@ -24,6 +24,12 @@ public class Runtime {
         return children;
     }
 
+    public static Optional<Process> getLastChild() {
+        if (children.size() > 0)
+            return Optional.of(children.get(children.size() - 1));
+        return Optional.empty();
+    }
+
     public static Optional<UnnamedPipe> getParentReadPipe() {
         return Optional.ofNullable(parentReadPipe);
     }
@@ -99,6 +105,10 @@ public class Runtime {
             throw new RuntimeException("Process forking failed");
     }
 
+    public static Process getCurrentProcess() {
+        return new Process(getPID());
+    }
+
     public static void addShutdownHook(String name, Runnable hook) {
         shutdownHooks.put(name, hook);
     }
@@ -127,7 +137,15 @@ public class Runtime {
     public static native void kill(int PID);
     public static native void kill(int PID, int signal);
 
+    public static void kill(int PID, Signal signal) {
+        kill(PID, signal.getNativeValue());
+    }
+
     private static native int callFork();
+
+    public static native int pause();
+
+    private static native int getPID();
 
     public enum ForkStatus {
         PARENT,
