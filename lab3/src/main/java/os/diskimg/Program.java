@@ -20,7 +20,7 @@ public class Program {
 
     public static class ImgStruct {
         public byte[] array = {0x8, 0x9, 0xA};
-        public String test = "TEST";
+        private String test = "TEST";
         public int count = 3;
         public Internal internal = new Internal();
     }

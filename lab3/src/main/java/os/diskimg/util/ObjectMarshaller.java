@@ -36,7 +36,7 @@ public class ObjectMarshaller {
         if (obj instanceof List)
             return marshallList((List<Object>) obj);
 
-        Field[] fields = type.getFields();
+        Field[] fields = type.getDeclaredFields();
 
         ArrayList<Byte> data = new ArrayList<>();
 
