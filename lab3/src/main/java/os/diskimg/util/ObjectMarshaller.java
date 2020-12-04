@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -64,6 +65,14 @@ public class ObjectMarshaller {
                 if (fieldValue instanceof AlignmentTo) {
                     while (data.size() < ((AlignmentTo) fieldValue).getSize())
                         data.write(0);
+                    continue;
+                }
+                MarshallWithCharset withCharset = field.getAnnotation(MarshallWithCharset.class);
+                if (withCharset != null && (fieldValue instanceof String || fieldValue instanceof Character)) {
+                    if (fieldValue instanceof String)
+                        data.write(marshallString((String) fieldValue, Charset.forName(withCharset.value())));
+                    if (fieldValue instanceof Character)
+                        data.write(marshallChar((Character) fieldValue, Charset.forName(withCharset.value())));
                     continue;
                 }
 
@@ -137,8 +146,12 @@ public class ObjectMarshaller {
     }
 
     private byte[] marshallChar(char value) {
+        return marshallChar(value, StandardCharsets.US_ASCII);
+    }
+
+    private byte[] marshallChar(char value, Charset charset) {
         try {
-            byte[] data = StandardCharsets.US_ASCII
+            byte[] data = charset
                     .newEncoder()
                     .encode(CharBuffer.wrap(new char[]{value}))
                     .array();
@@ -147,18 +160,22 @@ public class ObjectMarshaller {
             else
                 return data;
         } catch (CharacterCodingException ex) {
-            throw new RuntimeException("Cannot encode char to UTF-8", ex);
+            throw new RuntimeException("Cannot encode char to Charset " + charset.displayName(), ex);
         }
     }
 
     private byte[] marshallString(String value) {
+        return marshallString(value, StandardCharsets.US_ASCII);
+    }
+
+    private byte[] marshallString(String value, Charset charset) {
         try {
-            return StandardCharsets.US_ASCII
+            return charset
                     .newEncoder()
                     .encode(CharBuffer.wrap(value))
                     .array();
         } catch (CharacterCodingException ex) {
-            throw new RuntimeException("Cannot encode char to UTF-8", ex);
+            throw new RuntimeException("Cannot encode char to Charset " + charset.displayName(), ex);
         }
     }
 
