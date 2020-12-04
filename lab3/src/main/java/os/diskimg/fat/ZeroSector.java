@@ -9,6 +9,7 @@ public class ZeroSector {
 
     // Drive signature. Unique ID
     private final int id = new Random().nextInt();
+    private final short something = 0;
     // len: 16
     private final String section1Description = "                ";
     // len: 16
