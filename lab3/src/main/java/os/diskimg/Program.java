@@ -1,6 +1,7 @@
 package os.diskimg;
 
 import os.diskimg.fat.BootSector;
+import os.diskimg.fat.Fat32Image;
 import os.diskimg.fat.FatType;
 import os.diskimg.util.Endianness;
 import os.diskimg.util.ObjectMarshaller;
@@ -13,9 +14,9 @@ public class Program {
     public static void main(String[] args) {
         ObjectMarshaller marshaller = new ObjectMarshaller(Endianness.LITTLE_ENDIAN);
 
-        BootSector bootSector = BootSector.create(FatType.FAT32, 2048);
+        Fat32Image image = new Fat32Image(2048);
 
-        byte[] result = marshaller.marshall(bootSector);
+        byte[] result = marshaller.marshall(image);
 
         int idx = 0;
         for (byte value : result) {
