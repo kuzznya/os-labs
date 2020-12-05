@@ -67,17 +67,19 @@ public class ObjectMarshaller {
                         data.write(0);
                     continue;
                 }
-                MarshallWithCharset withCharset = field.getAnnotation(MarshallWithCharset.class);
-                if (withCharset != null && (fieldValue instanceof String || fieldValue instanceof Character)) {
-                    if (fieldValue instanceof String)
-                        data.write(marshallString((String) fieldValue, Charset.forName(withCharset.value())));
-                    if (fieldValue instanceof Character)
-                        data.write(marshallChar((Character) fieldValue, Charset.forName(withCharset.value())));
+                if (fieldValue instanceof Character) {
+                    marshallCharField(field, (Character) fieldValue, data);
+                    continue;
+                }
+                if (fieldValue instanceof String) {
+                    marshallStringField(field, (String) fieldValue, data);
                     continue;
                 }
 
                 data.write(marshall(fieldValue));
-            } catch (Exception ignored) {}
+            } catch (Exception ex) {
+                throw new RuntimeException("Marshalling error", ex);
+            }
         }
         while (data.size() < alignment)
             data.write(0);
@@ -177,6 +179,40 @@ public class ObjectMarshaller {
         } catch (CharacterCodingException ex) {
             throw new RuntimeException("Cannot encode char to Charset " + charset.displayName(), ex);
         }
+    }
+
+    private void marshallStringField(Field field, String fieldValue, ByteArrayOutputStream data) throws IOException {
+        MarshallWithCharset withCharset = field.getAnnotation(MarshallWithCharset.class);
+        Len len = field.getAnnotation(Len.class);
+
+        String formatted;
+        if (len != null) {
+            StringBuilder value;
+            if (fieldValue.length() > len.value())
+                value = new StringBuilder(fieldValue.substring(0, len.value()));
+            else {
+                value = new StringBuilder(fieldValue);
+                while (value.length() < len.value())
+                    value.append(len.fill());
+            }
+            formatted = value.toString();
+        }
+        else {
+            formatted = fieldValue;
+        }
+
+        if (withCharset != null)
+            data.write(marshallString(formatted, Charset.forName(withCharset.value())));
+        else
+            data.write(marshallString(formatted));
+    }
+
+    private void marshallCharField(Field field, Character value, ByteArrayOutputStream data) throws IOException {
+        MarshallWithCharset withCharset = field.getAnnotation(MarshallWithCharset.class);
+        if (withCharset != null)
+            data.write(marshallChar(value, Charset.forName(withCharset.value())));
+        else
+            data.write(marshallChar(value));
     }
 
     private byte[] marshallList(List<Object> values) {

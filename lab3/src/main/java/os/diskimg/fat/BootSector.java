@@ -4,21 +4,23 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import os.diskimg.util.AlignmentTo;
-import os.diskimg.util.IgnoreField;
+import os.diskimg.util.Len;
 
 public class BootSector {
 
     private final byte[] BS_jmpBoot = {(byte) 0xEB, (byte) 0x3C, (byte) 0x90};
 
     // manufacturer name, len: 8
-    private final String BS_OEMName = "kuzznya0";
+    @Len(value = 8, fill = '0')
+    private final String BS_OEMName = "kuzznya";
     // Bytes per sector, 512/1024/2048/4096
     @Getter
     private final short BPB_BytsPerSec = 512;
 
     // Sectors per cluster, 1, 2, 4, 8, ..., but cluster should be less than 32 Kb
     @Getter
-    private final byte BPB_SecPerClus = 32;
+    @Setter(AccessLevel.PRIVATE)
+    private byte BPB_SecPerClus = 32;
 
     // Reserved sectors, for FAT 16 often 1, for FAT 32 often 32
     @Getter
@@ -117,11 +119,13 @@ public class BootSector {
         private final int BS_VollD = (int) System.currentTimeMillis();
 
         // Volume label, len: 11
+        @Len(11)
         private final String BS_VolLab = "MYVOLUMELBL";
 
         // File system name, len: 8, can be "FAT12   ", "FAT16   ", "FAT     "
         @Getter
         @Setter(AccessLevel.PRIVATE)
+        @Len(8)
         private String BS_FilSysType;
     }
 
@@ -157,12 +161,28 @@ public class BootSector {
         private final int BS_VollD = (int) System.currentTimeMillis();
 
         // Volume label, len: 11
+        @Len(11)
         private final String BS_VolLab = "MYVOLUMELBL";
 
         // File system name, len: 8, "FAT32   "
         @Getter
+        @Len(8)
         private final String BS_FilSysType = "FAT32   ";
 
+    }
+
+    public int getFatTableSize() {
+        if (part instanceof BPBPartFat32)
+            return ((BPBPartFat32) part).getBPB_FATSz32();
+        else
+            return BPB_FATSz16;
+    }
+
+    public void setFatTableSize(int size) {
+        if (part instanceof BPBPartFat32)
+            ((BPBPartFat32) part).setBPB_FATSz32(size);
+        else
+            BPB_FATSz16 = (short) size;
     }
 
 
@@ -173,6 +193,13 @@ public class BootSector {
             case FAT16:
                 throw new RuntimeException("Not implemented");
             case FAT32:
+                if (driveSize < 260 * 1024 * 1024)
+                    sector.setBPB_SecPerClus((byte) 1);
+                else if (driveSize < 8 * 1024 * 1024 * 1024)
+                    sector.setBPB_SecPerClus((byte) 8);
+                else
+                    sector.setBPB_SecPerClus((byte) 16);
+                // Do not handle drives of size more than 16GB
                 sector.setBPB_RsvdSecCnt((short) 32);
                 sector.setBPB_RootEntCount((short) 0);
                 sector.setBPB_TotSec16((short) 0);
