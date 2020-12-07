@@ -1,42 +1,34 @@
 package os.diskimg;
 
-import os.diskimg.fat.BootSector;
-import os.diskimg.fat.Fat32Image;
-import os.diskimg.fat.FatType;
-import os.diskimg.util.Endianness;
-import os.diskimg.util.ObjectMarshaller;
+import os.diskimg.fat.FatImage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 public class Program {
 
     public static void main(String[] args) {
-        ObjectMarshaller marshaller = new ObjectMarshaller(Endianness.LITTLE_ENDIAN);
-
-        Fat32Image image = new Fat32Image(2048);
-
-        byte[] result = marshaller.marshall(image);
-
-        int idx = 0;
-        for (byte value : result) {
-            System.out.print(idx++ + ": ");
-            System.out.print((char) value);
-            String hex = Integer.toHexString(Byte.toUnsignedInt(value));
-            System.out.println("\t (0x" + hex.substring(hex.length() > 1 ? hex.length() - 2 : 0) + ")");
+        try {
+            File file = File.createTempFile("fatimage", "dmg");
+            file.deleteOnExit();
+            FatImage image = new FatImage(file, 64L * 1024 * 1024);
+            image.save();
+            FileInputStream outputStream = new FileInputStream(file);
+            InputStreamReader reader = new InputStreamReader(outputStream);
+            int pos = -1;
+            while (reader.ready()) {
+                int value = reader.read();
+                pos++;
+                if (value == 0)
+                    continue;
+                System.out.print(pos++ + ": ");
+                System.out.print((char) value);
+                String hex = Integer.toHexString(value);
+                System.out.println("\t (0x" + hex.substring(hex.length() > 1 ? hex.length() - 2 : 0) + ")");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-    }
-
-    public static class ImgStruct {
-        public byte[] array = {0x8, 0x9, 0xA};
-        private String test = "TEST";
-        public int count = 3;
-        public Internal internal = new Internal();
-    }
-
-    public static class Internal {
-        public String someTest = "Internal";
-        public byte[] data = {'t', 'e', 's', 't'};
-        public ArrayList<String> strings = new ArrayList<>(List.of("test1", "test2", "test3"));
     }
 }

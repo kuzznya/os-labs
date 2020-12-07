@@ -5,9 +5,9 @@ import lombok.Getter;
 public class AlignmentTo {
     @Getter
     @IgnoreField
-    private final int size;
+    private final int position;
 
-    public AlignmentTo(int size) {
-        this.size = size;
+    public AlignmentTo(int position) {
+        this.position = position;
     }
 }

@@ -63,7 +63,7 @@ public class ObjectMarshaller {
                 if (fieldValue == null)
                     continue;
                 if (fieldValue instanceof AlignmentTo) {
-                    while (data.size() < ((AlignmentTo) fieldValue).getSize())
+                    while (data.size() < ((AlignmentTo) fieldValue).getPosition())
                         data.write(0);
                     continue;
                 }
@@ -121,10 +121,10 @@ public class ObjectMarshaller {
 
     private byte[] marshallInt(int value) {
         byte[] data = new byte[] {
-                (byte) (value >> 24),
-                (byte) (value >> 16),
-                (byte) (value >> 8),
-                (byte) (value)};
+                (byte) ((value & 0xFF000000) >> 24),
+                (byte) ((value & 0x00FF0000) >> 16),
+                (byte) ((value & 0x0000FF00) >> 8),
+                (byte) (value & 0x000000FF)};
         if (endianness == Endianness.LITTLE_ENDIAN)
             return reverse(data);
         else

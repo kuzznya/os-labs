@@ -3,10 +3,18 @@ package os.diskimg.fat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import os.diskimg.file.FileBackedData;
 import os.diskimg.util.AlignmentTo;
+import os.diskimg.util.IgnoreField;
 import os.diskimg.util.Len;
 
-public class BootSector {
+import java.io.RandomAccessFile;
+
+public class BootSector extends FileBackedData {
+
+    @Getter
+    @IgnoreField
+    private final FatType type;
 
     private final byte[] BS_jmpBoot = {(byte) 0xEB, (byte) 0x3C, (byte) 0x90};
 
@@ -22,16 +30,17 @@ public class BootSector {
     @Setter(AccessLevel.PRIVATE)
     private byte BPB_SecPerClus = 32;
 
-    // Reserved sectors, for FAT 16 often 1, for FAT 32 often 32
+    // Reserved sectors, for FAT 16 - 1, for FAT 32 often 32
     @Getter
     @Setter(AccessLevel.PRIVATE)
     private short BPB_RsvdSecCnt;
 
     // FAT tables count, often 2
     @Getter
-    private final byte BPB_NumFATs = 1;
+    private final byte BPB_NumFATs = 2;
 
     // Count of 32-bit records for FAT12/16, 0 for FAT32
+    @Getter
     @Setter(AccessLevel.PRIVATE)
     private short BPB_RootEntCount;
 
@@ -40,6 +49,7 @@ public class BootSector {
     private short BPB_TotSec16;
 
     // Media type, 0xF8 is the standard value for “fixed” (non-removable) media, 0xF0 is frequently used for removable
+    @Getter
     private final byte BPB_Media = (byte) 0xF8;
 
     // for FAT12/16 - FAT table size in sectors, 0 for FAT32
@@ -102,6 +112,11 @@ public class BootSector {
     private final AlignmentTo alignment = new AlignmentTo(510);
 
     private final byte[] END_OF_SECTOR = {0x55, (byte) 0xAA};
+
+    private BootSector(RandomAccessFile file, long position, FatType type) {
+        super(file, position);
+        this.type = type;
+    }
 
 
     public interface BPBPart { }
@@ -171,6 +186,13 @@ public class BootSector {
 
     }
 
+    public int getBPB_TotSec() {
+        if (BPB_TotSec16 != 0)
+            return BPB_TotSec16;
+        else
+            return BPB_TotSec32;
+    }
+
     public int getFatTableSize() {
         if (part instanceof BPBPartFat32)
             return ((BPBPartFat32) part).getBPB_FATSz32();
@@ -178,16 +200,17 @@ public class BootSector {
             return BPB_FATSz16;
     }
 
-    public void setFatTableSize(int size) {
+    public void setFatTableSizeSectors(int size) {
         if (part instanceof BPBPartFat32)
             ((BPBPartFat32) part).setBPB_FATSz32(size);
         else
             BPB_FATSz16 = (short) size;
+        save();
     }
 
 
-    public static BootSector create(FatType type, int driveSize) {
-        BootSector sector = new BootSector();
+    public static BootSector create(RandomAccessFile file, long position, FatType type, long driveSize) {
+        BootSector sector = new BootSector(file, position, type);
         switch (type) {
             case FAT12:
             case FAT16:
@@ -195,7 +218,7 @@ public class BootSector {
             case FAT32:
                 if (driveSize < 260 * 1024 * 1024)
                     sector.setBPB_SecPerClus((byte) 1);
-                else if (driveSize < 8 * 1024 * 1024 * 1024)
+                else if (driveSize < 8L * 1024L * 1024L * 1024L) // 8 GB
                     sector.setBPB_SecPerClus((byte) 8);
                 else
                     sector.setBPB_SecPerClus((byte) 16);
@@ -204,13 +227,14 @@ public class BootSector {
                 sector.setBPB_RootEntCount((short) 0);
                 sector.setBPB_TotSec16((short) 0);
                 sector.setBPB_FATSz16((short) 0);
-                sector.setBPB_TotSec32(driveSize / sector.BPB_BytsPerSec);
+                sector.setBPB_TotSec32((int) (driveSize / sector.BPB_BytsPerSec));
 
                 BPBPartFat32 part = new BPBPartFat32();
                 part.setBPB_FATSz32(sector.BPB_TotSec32 / sector.BPB_NumFATs);
                 sector.setPart(part);
                 break;
         }
+        sector.save();
         return sector;
     }
 }
