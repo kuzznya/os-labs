@@ -2,6 +2,7 @@ package os.diskimg.fat;
 
 import os.diskimg.fat.table.Fat32Table;
 import os.diskimg.fat.table.FatTable;
+import os.diskimg.file.DataCopy;
 import os.diskimg.file.FileBacked;
 import os.diskimg.util.AlignmentTo;
 
@@ -14,9 +15,10 @@ public class FatImage implements FileBacked {
 //    private final PartitionTable partitionTable;
     private final BootSector bootSector;
     private final AlignmentTo bootSectorCopyAlignment;
-    private final BootSector bootSectorCopy;
+    private final DataCopy bootSectorCopy;
     private final AlignmentTo fatTableAlignment;
     private final FatTable table;
+    private final DataCopy tableCopy; // TODO: 07.12.2020 handle copies of DataSector
     private final Cluster[] data;
 
 
@@ -31,13 +33,15 @@ public class FatImage implements FileBacked {
         bootSector = BootSector.create(file, 0, FatType.FAT32, size);
 
         bootSectorCopyAlignment = new AlignmentTo(bootSector.getBPB_BytsPerSec() * 6);
-        bootSectorCopy = BootSector.create(file, bootSectorCopyAlignment.getPosition(), FatType.FAT32, size);
+        bootSectorCopy = new DataCopy(bootSectorCopyAlignment.getPosition(), bootSector);
 
         fatTableAlignment = new AlignmentTo(bootSector.getBPB_BytsPerSec() * bootSector.getBPB_RsvdSecCnt());
 
         int fatSize = fatTableSizeSectors();
         bootSector.setFatTableSizeSectors(fatSize);
         table = new Fat32Table(file, fatTableAlignment.getPosition(), fatSize, bootSector.getBPB_BytsPerSec());
+        long tableCopyPosition = fatTableAlignment.getPosition() + fatSize * bootSector.getBPB_BytsPerSec();
+        tableCopy = new DataCopy(tableCopyPosition, table);
 
         data = new Cluster[clustersCount()];
         for (int i = 0; i < data.length; i++) {
@@ -49,11 +53,23 @@ public class FatImage implements FileBacked {
     }
 
     @Override
+    public byte[] load() {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
     public void save() {
         bootSector.save();
+        bootSectorCopy.save();
         table.save();
-        for (Cluster cluster : data)
-            cluster.save();
+        tableCopy.save();
+//        for (Cluster cluster : data)
+//            cluster.save();
+    }
+
+    @Override
+    public void save(long position) {
+        save(); // Not correct, but ...
     }
 
     public int rootDirSectors() {

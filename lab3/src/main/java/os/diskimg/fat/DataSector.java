@@ -3,13 +3,16 @@ package os.diskimg.fat;
 import os.diskimg.file.FileBackedData;
 import os.diskimg.util.Endianness;
 import os.diskimg.util.IgnoreField;
+import os.diskimg.util.Marshallable;
 import os.diskimg.util.ObjectMarshaller;
 
 import java.io.RandomAccessFile;
 
-public class DataSector extends FileBackedData {
+public class DataSector extends FileBackedData implements Marshallable {
 
     private byte[] data;
+    @IgnoreField
+    private final int size;
 
     @IgnoreField
     private static final ObjectMarshaller marshaller = new ObjectMarshaller(Endianness.LITTLE_ENDIAN);
@@ -21,6 +24,7 @@ public class DataSector extends FileBackedData {
         data = new byte[size];
         save();
         data = null;
+        this.size = size;
     }
 
     public void write(int idx, byte value) {
@@ -57,5 +61,10 @@ public class DataSector extends FileBackedData {
 
     public byte[] read(int idx, int len) {
         return super.read(idx, len);
+    }
+
+    @Override
+    public byte[] marshall() {
+        return read(0, size);
     }
 }
