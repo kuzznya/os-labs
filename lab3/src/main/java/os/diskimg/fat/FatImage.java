@@ -18,7 +18,7 @@ public class FatImage implements FileBacked {
     private final DataCopy bootSectorCopy;
     private final AlignmentTo fatTableAlignment;
     private final FatTable table;
-    private final DataCopy tableCopy; // TODO: 07.12.2020 handle copies of DataSector
+    private final DataCopy[] tableCopies;
     private final Cluster[] data;
 
 
@@ -40,8 +40,11 @@ public class FatImage implements FileBacked {
         int fatSize = fatTableSizeSectors();
         bootSector.setFatTableSizeSectors(fatSize);
         table = new Fat32Table(file, fatTableAlignment.getPosition(), fatSize, bootSector.getBPB_BytsPerSec());
-        long tableCopyPosition = fatTableAlignment.getPosition() + fatSize * bootSector.getBPB_BytsPerSec();
-        tableCopy = new DataCopy(tableCopyPosition, table);
+        tableCopies = new DataCopy[bootSector.getBPB_NumFATs() - 1];
+        for (int i = 0; i < bootSector.getBPB_NumFATs() - 1; i++) {
+            long tableCopyPosition = fatTableAlignment.getPosition() + fatSize * bootSector.getBPB_BytsPerSec();
+            tableCopies[i] = new DataCopy(tableCopyPosition, table);
+        }
 
         data = new Cluster[clustersCount()];
         for (int i = 0; i < data.length; i++) {
@@ -62,7 +65,8 @@ public class FatImage implements FileBacked {
         bootSector.save();
         bootSectorCopy.save();
         table.save();
-        tableCopy.save();
+        for (DataCopy tableCopy : tableCopies)
+            tableCopy.save();
         for (Cluster cluster : data)
             cluster.save();
     }
