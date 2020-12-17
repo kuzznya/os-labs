@@ -26,13 +26,14 @@ public class Fat32Table implements FatTable {
 
         setRaw(0, 0x0FFFFFF8);
         setRaw(1, END_OF_CHAIN);
+        setRaw(2, ROOT_DIR_CLUSTER);
     }
 
     private int get(int idx) {
         int FATOffset = idx * 4;
         int sectorIdx = FATOffset / sectorSize;
         int entryOffset = FATOffset % sectorSize;
-        return data[sectorIdx].readInt(entryOffset);
+        return data[sectorIdx].readInt(entryOffset) & 0x0FFFFFFF;
     }
 
     private void set(int idx, int value) {
@@ -83,5 +84,14 @@ public class Fat32Table implements FatTable {
     public void save() {
         for (DataSector sector : data)
             sector.save();
+    }
+
+    @Override
+    public void save(long position) {
+        System.out.println("Saving FAT32 table at position " + position);
+        for (int i = 0; i < data.length; i++) {
+            System.out.println("Saving sector " + i + " at position " + (position + sectorSize * i));
+            data[i].save(position + sectorSize * i);
+        }
     }
 }

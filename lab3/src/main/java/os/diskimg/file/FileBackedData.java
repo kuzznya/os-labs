@@ -33,6 +33,19 @@ public abstract class FileBackedData implements FileBacked {
         }
     }
 
+    @Override
+    public void save(long position) {
+        try {
+            file.seek(position);
+            byte[] data = marshaller.marshall(this);
+            System.out.println("Data size is " + data.length);
+            if (data.length > 0)
+                file.write(data);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     protected byte read(int relativePosition) {
         try {
             file.seek(position + relativePosition);
