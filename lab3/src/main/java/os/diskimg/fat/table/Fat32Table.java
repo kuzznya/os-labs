@@ -70,6 +70,19 @@ public class Fat32Table implements FatTable {
     }
 
     @Override
+    public ClusterChain getChain(int start, int length) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = start; i < start + length; i++)
+            result.add(i);
+        return new ClusterChain(this, result);
+    }
+
+    @Override
+    public void markOccupied(int idx) {
+        set(idx, END_OF_CHAIN);
+    }
+
+    @Override
     public void markOccupied(int idx, int previous) {
         set(previous, idx & 0x0FFFFFFF);
         set(idx, END_OF_CHAIN);

@@ -12,7 +12,7 @@ import java.io.RandomAccessFile;
 
 public class FatImage implements FileBacked {
 
-//    private final PartitionTable partitionTable;
+    private final PartitionTable partitionTable;
     private final BootSector bootSector;
     private final AlignmentTo bootSectorCopyAlignment;
     private final DataCopy bootSectorCopy;
@@ -30,7 +30,8 @@ public class FatImage implements FileBacked {
         for (int i = 0; i < size / 1024 / 1024; i++)
             file.write(buffer);
 
-        bootSector = BootSector.create(file, 0, FatType.FAT32, size);
+        partitionTable = new PartitionTable(file, 0);
+        bootSector = BootSector.create(file, 512, FatType.FAT32, size);
 
         bootSectorCopyAlignment = new AlignmentTo(bootSector.getBPB_BytsPerSec() * 6);
         bootSectorCopy = new DataCopy(bootSectorCopyAlignment.getPosition(), bootSector);
@@ -62,6 +63,7 @@ public class FatImage implements FileBacked {
 
     @Override
     public void save() {
+        partitionTable.save();
         bootSector.save();
         bootSectorCopy.save();
         table.save();

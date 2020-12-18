@@ -1,12 +1,15 @@
 package os.diskimg.fat;
 
+import lombok.Getter;
 import os.diskimg.file.FileBacked;
 
 import java.io.RandomAccessFile;
 
 public class Cluster implements FileBacked {
 
+    @Getter
     private final DataSector[] sectors;
+    @Getter
     private final int sectorSize;
 
     public Cluster(RandomAccessFile file, long position, int clusterSize, int sectorSize) {

@@ -208,6 +208,13 @@ public class BootSector extends FileBackedData {
         save();
     }
 
+    public int getRootDirSector() {
+        if (type == FatType.FAT32)
+            return ((BPBPartFat32) part).BPB_RootClus;
+        else
+            return 2;
+    }
+
 
     public static BootSector create(RandomAccessFile file, long position, FatType type, long driveSize) {
         BootSector sector = new BootSector(file, position, type);
